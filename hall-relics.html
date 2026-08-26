@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>革命文物厅 - 红色电子AI博物馆</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ---------- 革命文物厅 专属样式 ---------- */
+
+    /* Hero 区域 */
+    .relics-hero {
+      position: relative;
+      min-height: 600px;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      background: linear-gradient(135deg, #2C1810 0%, #5C3317 40%, #8B4513 100%);
+    }
+    .relics-hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        radial-gradient(ellipse at 70% 50%, rgba(212, 175, 55, 0.18) 0%, transparent 50%),
+        radial-gradient(ellipse at 20% 30%, rgba(139, 69, 19, 0.3) 0%, transparent 40%);
+      pointer-events: none;
+    }
+    .relics-hero::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image:
+        repeating-linear-gradient(
+          45deg,
+          transparent,
+          transparent 40px,
+          rgba(255, 255, 255, 0.02) 40px,
+          rgba(255, 255, 255, 0.02) 41px
+        );
+      pointer-events: none;
+    }
+    .relics-hero-content {
+      position: relative;
+      z-index: 2;
+      padding: var(--space-20) 0;
+      color: #fff;
+      max-width: 760px;
+    }
+    .relics-hero-content .hall-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-4);
+      background: rgba(212, 175, 55, 0.15);
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      border-radius: var(--radius-full);
+      font-size: var(--fs-sm);
+      color: var(--gold-300);
+      margin-bottom: var(--space-6);
+      backdrop-filter: blur(8px);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+    }
+    .relics-hero-content h1 {
+      font-size: var(--fs-5xl);
+      color: #fff;
+      margin-bottom: var(--space-4);
+      line-height: 1.15;
+      font-family: var(--font-display);
+    }
+    .relics-hero-content h1 .highlight {
+      background: linear-gradient(135deg, var(--gold-300), #E8C547);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .relics-hero-content .subtitle {
+      font-size: var(--fs-xl);
+      color: #E8D5B7;
+      margin-bottom: var(--space-6);
+      font-family: var(--font-display);
+      font-weight: 500;
+      letter-spacing: 0.1em;
+    }
+    .relics-hero-content .desc {
+      font-size: var(--fs-lg);
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.9;
+      margin-bottom: var(--space-8);
+    }
+    .relics-hero-actions {
+      display: flex;
+      gap: var(--space-4);
+      flex-wrap: wrap;
+    }
+
+    /* 展厅概览 */
+    .relics-overview {
+      padding: var(--space-20) 0;
+      background: var(--bg);
+    }
+    .overview-stats-relics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-6);
+      margin-bottom: var(--space-12);
+    }
+    .overview-stat-relic {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-8) var(--space-6);
+      text-align: center;
+      transition: all var(--duration-base) var(--ease-standard);
+      position: relative;
+      overflow: hidden;
+    }
+    .overview-stat-relic::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #8B4513, var(--gold-400));
+    }
+    .overview-stat-relic:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: #D4B896;
+    }
+    .overview-stat-relic .stat-num {
+      font-family: var(--font-display);
+      font-size: var(--fs-4xl);
+      font-weight: 700;
+      color: #8B4513;
+      line-height: 1;
+      margin-bottom: var(--space-2);
+    }
+    .overview-stat-relic .stat-label {
+      font-size: var(--fs-sm);
+      color: var(--text-muted);
+    }
+    .overview-stat-relic .stat-icon {
+      font-size: var(--fs-3xl);
+      margin-bottom: var(--space-3);
+      opacity: 0.8;
+    }
+
+    /* 分类导航 */
+    .category-nav {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-4);
+      flex-wrap: wrap;
+      margin-bottom: var(--space-6);
+    }
+    .category-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-5) var(--space-6);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      transition: all var(--duration-base) var(--ease-standard);
+      min-width: 120px;
+    }
+    .category-item:hover {
+      border-color: #8B4513;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    .category-item.active {
+      background: linear-gradient(135deg, #8B4513, #5C3317);
+      border-color: #8B4513;
+      color: #fff;
+    }
+    .category-item.active .cat-icon { opacity: 1; }
+    .category-item.active .cat-label { color: #fff; }
+    .category-item .cat-icon {
+      font-size: var(--fs-3xl);
+      opacity: 0.7;
+      transition: opacity var(--duration-base);
+    }
+    .category-item .cat-label {
+      font-size: var(--fs-sm);
+      font-weight: 500;
+      color: var(--text-secondary);
+      transition: color var(--duration-base);
+    }
+
+    /* 文物筛选标签 */
+    .filter-section {
+      padding: var(--space-12) 0 var(--space-8);
+      background: var(--surface-2);
+    }
+    .filter-tags {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: var(--space-3);
+    }
+    .filter-tag {
+      padding: var(--space-2) var(--space-5);
+      font-size: var(--fs-sm);
+      font-weight: 500;
+      border-radius: var(--radius-full);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-standard);
+    }
+    .filter-tag:hover {
+      border-color: #8B4513;
+      color: #8B4513;
+    }
+    .filter-tag.active {
+      background: linear-gradient(135deg, #8B4513, #5C3317);
+      border-color: #8B4513;
+      color: #fff;
+    }
+
+    /* 文物网格 */
+    .relics-grid-section {
+      padding: var(--space-8) 0 var(--space-20);
+      background: var(--surface-2);
+    }
+    .relics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-6);
+    }
+    .relic-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      transition: all var(--duration-base) var(--ease-standard);
+      display: flex;
+      flex-direction: column;
+    }
+    .relic-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-xl);
+      border-color: #C49A6C;
+    }
+    .relic-card-image {
+      height: 180px;
+      position: relative;
+      overflow: hidden;
+    }
+    .relic-card-image::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 50%, rgba(0, 0, 0, 0.3) 100%);
+      transition: opacity var(--duration-base);
+    }
+    .relic-card:hover .relic-card-image::after {
+      opacity: 0.7;
+    }
+    .relic-card-image .rarity-badge {
+      position: absolute;
+      top: var(--space-3);
+      right: var(--space-3);
+      z-index: 1;
+      padding: 3px 10px;
+      background: rgba(212, 175, 55, 0.95);
+      color: var(--gray-800);
+      font-size: var(--fs-xs);
+      font-weight: 600;
+      border-radius: var(--radius-full);
+      backdrop-filter: blur(4px);
+    }
+    .relic-card-image .hall-badge-small {
+      position: absolute;
+      bottom: var(--space-3);
+      left: var(--space-3);
+      z-index: 1;
+      padding: 2px 8px;
+      background: rgba(0, 0, 0, 0.5);
+      color: #fff;
+      font-size: 11px;
+      border-radius: var(--radius-sm);
+      backdrop-filter: blur(4px);
+    }
+    .relic-card-body {
+      padding: var(--space-4);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .relic-card-body h4 {
+      font-size: var(--fs-base);
+      margin-bottom: var(--space-2);
+      color: var(--text);
+      line-height: 1.4;
+    }
+    .relic-card-body .relic-era {
+      font-size: var(--fs-xs);
+      color: #8B4513;
+      font-weight: 500;
+      margin-bottom: var(--space-2);
+    }
+    .relic-card-body p {
+      font-size: var(--fs-xs);
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: var(--space-3);
+      flex: 1;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .relic-card-body .btn-detail {
+      width: 100%;
+      padding: var(--space-2);
+      font-size: var(--fs-xs);
+      background: transparent;
+      border: 1px solid #8B4513;
+      color: #8B4513;
+      border-radius: var(--radius-md);
+      text-align: center;
+      text-decoration: none;
+      transition: all var(--duration-fast);
+      font-weight: 500;
+    }
+    .relic-card-body .btn-detail:hover {
+      background: #8B4513;
+      color: #fff;
+    }
+
+    /* 镇馆之宝 */
+    .treasure-section {
+      padding: var(--space-20) 0;
+      background: linear-gradient(135deg, #2C1810 0%, #3D2317 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .treasure-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 30%, rgba(196, 30, 58, 0.08) 0%, transparent 40%);
+      pointer-events: none;
+    }
+    .treasure-section .section-header h2,
+    .treasure-section .section-header p {
+      color: #fff;
+    }
+    .treasure-section .section-header .eyebrow {
+      color: var(--gold-400);
+    }
+    .treasure-section .section-header p {
+      color: rgba(255, 255, 255, 0.6);
+    }
+    .treasure-content {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-12);
+      align-items: center;
+    }
+    .treasure-image {
+      position: relative;
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      aspect-ratio: 4 / 3;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    }
+    .treasure-image::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+      z-index: 1;
+      pointer-events: none;
+    }
+    .treasure-image .treasure-badge {
+      position: absolute;
+      top: var(--space-5);
+      left: var(--space-5);
+      z-index: 2;
+      padding: var(--space-2) var(--space-4);
+      background: linear-gradient(135deg, var(--gold-400), var(--gold-600));
+      color: var(--gray-800);
+      font-size: var(--fs-sm);
+      font-weight: 700;
+      border-radius: var(--radius-full);
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .treasure-info h3 {
+      font-size: var(--fs-4xl);
+      color: #fff;
+      margin-bottom: var(--space-3);
+      font-family: var(--font-display);
+    }
+    .treasure-info .treasure-era {
+      font-size: var(--fs-lg);
+      color: var(--gold-400);
+      margin-bottom: var(--space-6);
+      font-weight: 500;
+    }
+    .treasure-info .treasure-desc {
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 2;
+      margin-bottom: var(--space-6);
+      font-size: var(--fs-base);
+    }
+    .treasure-info .treasure-story {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-lg);
+      padding: var(--space-6);
+      margin-bottom: var(--space-6);
+    }
+    .treasure-info .treasure-story h4 {
+      color: var(--gold-300);
+      font-size: var(--fs-lg);
+      margin-bottom: var(--space-3);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .treasure-info .treasure-story p {
+      color: rgba(255, 255, 255, 0.75);
+      line-height: 1.9;
+      font-size: var(--fs-sm);
+    }
+    .treasure-info .treasure-tags {
+      display: flex;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+      margin-bottom: var(--space-6);
+    }
+    .treasure-info .treasure-tag {
+      padding: 4px 12px;
+      background: rgba(212, 175, 55, 0.15);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: var(--radius-full);
+      font-size: var(--fs-xs);
+      color: var(--gold-300);
+    }
+
+    /* 文物故事 */
+    .stories-section {
+      padding: var(--space-20) 0;
+      background: var(--bg);
+    }
+    .stories-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-6);
+    }
+    .story-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      transition: all var(--duration-base) var(--ease-standard);
+      display: flex;
+      flex-direction: column;
+    }
+    .story-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-xl);
+      border-color: #D4B896;
+    }
+    .story-card-image {
+      height: 200px;
+      position: relative;
+    }
+    .story-card-image::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 40%, rgba(0, 0, 0, 0.5) 100%);
+    }
+    .story-card-image .story-type {
+      position: absolute;
+      bottom: var(--space-4);
+      left: var(--space-4);
+      z-index: 1;
+      padding: 3px 10px;
+      background: rgba(139, 69, 19, 0.9);
+      color: #fff;
+      font-size: var(--fs-xs);
+      font-weight: 500;
+      border-radius: var(--radius-full);
+    }
+    .story-card-body {
+      padding: var(--space-6);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .story-card-body h4 {
+      font-size: var(--fs-lg);
+      margin-bottom: var(--space-3);
+      color: var(--text);
+      line-height: 1.4;
+    }
+    .story-card-body p {
+      font-size: var(--fs-sm);
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin-bottom: var(--space-4);
+      flex: 1;
+    }
+    .story-card-body .story-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: var(--space-3);
+      border-top: 1px solid var(--border-light);
+      font-size: var(--fs-xs);
+      color: var(--text-muted);
+    }
+
+    /* 互动区 */
+    .interactive-relics {
+      padding: var(--space-20) 0;
+      background: linear-gradient(135deg, #5C3317 0%, #8B4513 50%, #6B3410 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .interactive-relics::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 30% 50%, rgba(212, 175, 55, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 40%);
+      pointer-events: none;
+    }
+    .interactive-relics-content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      color: #fff;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .interactive-relics-content .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-4);
+      background: rgba(212, 175, 55, 0.2);
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      border-radius: var(--radius-full);
+      font-size: var(--fs-sm);
+      color: var(--gold-300);
+      margin-bottom: var(--space-6);
+      font-weight: 500;
+    }
+    .interactive-relics-content h2 {
+      font-size: var(--fs-4xl);
+      color: #fff;
+      margin-bottom: var(--space-4);
+    }
+    .interactive-relics-content h2 .highlight {
+      background: linear-gradient(135deg, var(--gold-300), var(--gold-500));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .interactive-relics-content p {
+      font-size: var(--fs-lg);
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: var(--space-8);
+      line-height: 1.8;
+    }
+    .interactive-relics-content .btn-gold {
+      padding: var(--space-4) var(--space-10);
+      font-size: var(--fs-lg);
+    }
+
+    /* 响应式 */
+    @media (max-width: 1024px) {
+      .overview-stats-relics { grid-template-columns: repeat(2, 1fr); }
+      .relics-grid { grid-template-columns: repeat(3, 1fr); }
+      .treasure-content { grid-template-columns: 1fr; gap: var(--space-8); }
+      .stories-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .relics-hero { min-height: 480px; }
+      .relics-hero-content h1 { font-size: var(--fs-3xl); }
+      .relics-hero-content .subtitle { font-size: var(--fs-lg); }
+      .overview-stats-relics { grid-template-columns: repeat(2, 1fr); gap: var(--space-4); }
+      .overview-stat-relic { padding: var(--space-6) var(--space-4); }
+      .overview-stat-relic .stat-num { font-size: var(--fs-3xl); }
+      .category-item { min-width: 80px; padding: var(--space-3) var(--space-4); }
+      .category-item .cat-icon { font-size: var(--fs-2xl); }
+      .relics-grid { grid-template-columns: repeat(2, 1fr); gap: var(--space-4); }
+      .relic-card-image { height: 140px; }
+      .treasure-info h3 { font-size: var(--fs-3xl); }
+      .stories-grid { grid-template-columns: 1fr; }
+      .interactive-relics-content h2 { font-size: var(--fs-3xl); }
+    }
+  </style>
+</head>
+<body>
+  <!-- 导航栏 -->
+  <div id="nav-container"></div>
+
+  <main>
+    <!-- 1. 展厅 Hero -->
+    <section class="relics-hero">
+      <div class="container">
+        <div class="relics-hero-content animate-fadeInUp">
+          <span class="hall-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+            </svg>
+            珍贵文物 · 第二展厅
+          </span>
+          <h1>革命文物厅</h1>
+          <div class="subtitle">峥嵘岁月 · 文物中的红色记忆</div>
+          <p class="desc">
+            收藏革命战争时期的珍贵文物，从文献手稿到生活用品，从武器装备到纪念物品。每一件文物都承载着波澜壮阔的历史故事，见证着先辈们的奋斗与牺牲。让文物说话，让历史发声。
+          </p>
+          <div class="relics-hero-actions">
+            <a href="#relics-grid" class="btn btn-gold btn-lg">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="3" y1="9" x2="21" y2="9"></line>
+                <line x1="9" y1="21" x2="9" y2="9"></line>
+              </svg>
+              浏览文物
+            </a>
+            <a href="#treasure" class="btn btn-secondary btn-lg" style="border-color: rgba(255,255,255,0.4); color: #fff;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+              镇馆之宝
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. 展厅概览 -->
+    <section class="relics-overview">
+      <div class="container">
+        <div class="section-header animate-on-scroll">
+          <div class="eyebrow">HALL OVERVIEW</div>
+          <h2>展厅概览</h2>
+          <p>馆藏革命文物，见证峥嵘岁月，传承红色基因</p>
+          <div class="divider-line"></div>
+        </div>
+
+        <div class="overview-stats-relics">
+          <div class="overview-stat-relic animate-on-scroll">
+            <div class="stat-icon">🏺</div>
+            <div class="stat-num" data-target="256">0</div>
+            <div class="stat-label">馆藏文物</div>
+          </div>
+          <div class="overview-stat-relic animate-on-scroll">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-num" data-target="86">0</div>
+            <div class="stat-label">一级文物</div>
+          </div>
+          <div class="overview-stat-relic animate-on-scroll">
+            <div class="stat-icon">📖</div>
+            <div class="stat-num" data-target="4">0</div>
+            <div class="stat-label">文物类别</div>
+          </div>
+          <div class="overview-stat-relic animate-on-scroll">
+            <div class="stat-icon">👁️</div>
+            <div class="stat-num" data-target="256">0</div>
+            <div class="stat-label">累计参观(万人次)</div>
+          </div>
+        </div>
+
+        <!-- 分类导航 -->
+        <div class="category-nav">
+          <div class="category-item active" data-category="all">
+            <span class="cat-icon">📚</span>
+            <span class="cat-label">全部文物</span>
+          </div>
+          <div class="category-item" data-category="document">
+            <span class="cat-icon">📜</span>
+            <span class="cat-label">文献类</span>
+          </div>
+          <div class="category-item" data-category="object">
+            <span class="cat-icon">🏺</span>
+            <span class="cat-label">实物类</span>
+          </div>
+          <div class="category-item" data-category="image">
+            <span class="cat-icon">📷</span>
+            <span class="cat-label">影像类</span>
+          </div>
+          <div class="category-item" data-category="memorial">
+            <span class="cat-icon">🏛️</span>
+            <span class="cat-label">纪念类</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. 文物分类筛选 -->
+    <section class="filter-section">
+      <div class="container">
+        <div class="filter-tags" id="filter-tags">
+          <span class="filter-tag active" data-filter="all">全部</span>
+          <span class="filter-tag" data-filter="一级文物">一级文物</span>
+          <span class="filter-tag" data-filter="二级文物">二级文物</span>
+          <span class="filter-tag" data-filter="文献手稿">文献手稿</span>
+          <span class="filter-tag" data-filter="生活用品">生活用品</span>
+          <span class="filter-tag" data-filter="武器装备">武器装备</span>
+          <span class="filter-tag" data-filter="纪念物品">纪念物品</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. 文物网格 -->
+    <section class="relics-grid-section" id="relics-grid">
+      <div class="container">
+        <div class="relics-grid" id="relics-grid-container">
+          <!-- 文物卡片由 JS 动态生成 -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. 镇馆之宝 -->
+    <section class="treasure-section" id="treasure">
+      <div class="container">
+        <div class="section-header animate-on-scroll">
+          <div class="eyebrow">HALL TREASURE</div>
+          <h2>镇馆之宝</h2>
+          <p>一件文物，一段历史，一种精神</p>
+          <div class="divider-line"></div>
+        </div>
+
+        <div class="treasure-content">
+          <div class="treasure-image animate-on-scroll" style="background: linear-gradient(135deg, #C41E3A 0%, #8B0000 100%);">
+            <span class="treasure-badge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+              镇馆之宝
+            </span>
+          </div>
+          <div class="treasure-info animate-on-scroll">
+            <h3>半条被子</h3>
+            <div class="treasure-era">1934年 · 红军长征时期</div>
+            <div class="treasure-tags">
+              <span class="treasure-tag">一级文物</span>
+              <span class="treasure-tag">生活用品</span>
+              <span class="treasure-tag">军民鱼水情</span>
+            </div>
+            <p class="treasure-desc">
+              1934年11月，红军长征途经湖南汝城县沙洲村，三名女红军借宿在徐解秀老人家中。
+              临走时，她们见徐家贫寒，连一床完整的被子都没有，便用剪刀把自己仅有的一床被子剪下一半，留给了徐解秀。
+            </p>
+            <div class="treasure-story">
+              <h4>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                文物背后的故事
+              </h4>
+              <p>
+                "什么是共产党？共产党就是自己有一条被子，也要剪下半条给老百姓的人。"徐解秀老人的这句话，道出了半条被子背后深刻的军民鱼水情。
+                三名女红军与徐解秀老人萍水相逢，却在寒冷的冬夜里分享了唯一的温暖。半条被子，承载的不仅是红军战士对人民群众的深情厚谊，
+                更是中国共产党人与人民群众血肉联系的生动写照。这半条被子，温暖了一个山村的冬夜，也温暖了整个中国的历史记忆。
+              </p>
+            </div>
+            <a href="ai-center.html" class="btn btn-gold">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+              </svg>
+              AI 语音讲解
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. 文物故事 -->
+    <section class="stories-section">
+      <div class="container">
+        <div class="section-header animate-on-scroll">
+          <div class="eyebrow">RELIC STORIES</div>
+          <h2>文物背后的故事</h2>
+          <p>每一件文物都有温度，每一个故事都令人动容</p>
+          <div class="divider-line"></div>
+        </div>
+
+        <div class="stories-grid">
+          <div class="story-card animate-on-scroll">
+            <div class="story-card-image" style="background: linear-gradient(135deg, #8B0000 0%, #4A0000 100%);">
+              <span class="story-type">文献手稿</span>
+            </div>
+            <div class="story-card-body">
+              <h4>真理的味道非常甜</h4>
+              <p>1920年的春夜，浙江义乌分水塘村一间柴屋里，陈望道在翻译《共产党宣言》。母亲送粽子和红糖进来，问他"红糖够不够"，他回答"够甜，够甜的了"。母亲进来收拾时，才发现他满嘴都是墨汁——原来他蘸的不是红糖，而是墨汁。</p>
+              <div class="story-meta">
+                <span>📜 《共产党宣言》中文全译本</span>
+                <span>1920年</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="story-card animate-on-scroll">
+            <div class="story-card-image" style="background: linear-gradient(135deg, #8B4513 0%, #5D2E0C 100%);">
+              <span class="story-type">生活用品</span>
+            </div>
+            <div class="story-card-body">
+              <h4>一件棉袄的长征路</h4>
+              <p>这件棉袄的主人是一位普通的红军战士，它伴随战士走完了二万五千里长征。棉袄上有27处补丁，每一处补丁背后都有一个故事。过雪山时，战士把棉袄让给了受伤的战友；过草地时，棉袄的一角被用来包裹受伤的脚。</p>
+              <div class="story-meta">
+                <span>🥾 红军长征穿过的棉袄</span>
+                <span>1935年</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="story-card animate-on-scroll">
+            <div class="story-card-image" style="background: linear-gradient(135deg, #B8860B 0%, #8B6508 100%);">
+              <span class="story-type">纪念物品</span>
+            </div>
+            <div class="story-card-body">
+              <h4>28响礼炮的含义</h4>
+              <p>开国大典上，54门礼炮齐鸣28响。54门礼炮象征着参加中国人民政治协商会议第一届全体会议的54个民族，28响标志着中国共产党领导人民英勇奋斗的28年。这隆隆的礼炮声，向全世界宣告新中国的诞生。</p>
+              <div class="story-meta">
+                <span>🎖️ 开国大典上使用的礼炮</span>
+                <span>1949年</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. 互动区 -->
+    <section class="interactive-relics">
+      <div class="container">
+        <div class="interactive-relics-content animate-on-scroll">
+          <div class="eyebrow">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21 15 16 10 5 21"></polyline>
+            </svg>
+            AI 互动体验
+          </div>
+          <h2>AI 修复您的<span class="highlight">老照片</span></h2>
+          <p>
+            家中有珍藏的老照片吗？上传您的老照片，AI将自动修复破损、增强清晰度、
+            上色还原，让珍贵的历史记忆重现光彩。
+          </p>
+          <a href="ai-center.html" class="btn btn-gold btn-lg">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            立即体验
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 底部 -->
+  <div id="footer-container"></div>
+
+  <script src="mock.js"></script>
+  <script src="app.js"></script>
+  <script>
+    // 渲染导航和页脚
+    document.getElementById('nav-container').innerHTML = MuseumUtils.getNavHTML('halls');
+    document.getElementById('footer-container').innerHTML = MuseumUtils.getFooterHTML();
+
+    // 文物分类映射（用于筛选标签匹配）
+    const relicCategories = {
+      1: ['一级文物', '文献手稿'],
+      2: ['一级文物', '纪念物品'],
+      3: ['一级文物', '生活用品'],
+      4: ['一级文物', '文献手稿'],
+      5: ['纪念物品', '二级文物'],
+      6: ['一级文物', '武器装备'],
+      7: ['一级文物', '生活用品'],
+      8: ['一级文物', '生活用品']
+    };
+
+    // 渲染文物网格
+    function renderRelicsGrid(filter = 'all') {
+      const container = document.getElementById('relics-grid-container');
+      let relics = window.MOCK.relics;
+
+      if (filter !== 'all') {
+        relics = relics.filter(relic => {
+          const tags = relicCategories[relic.id] || [];
+          return tags.includes(filter) || relic.rarity === filter;
+        });
+      }
+
+      if (relics.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: var(--space-16); color: var(--text-muted);">
+            <div style="font-size: 48px; margin-bottom: var(--space-4);">🔍</div>
+            <p>暂无符合条件的文物</p>
+          </div>
+        `;
+        return;
+      }
+
+      const html = relics.map(relic => `
+        <div class="relic-card animate-on-scroll">
+          <div class="relic-card-image" style="background: ${relic.image};">
+            <span class="rarity-badge">${relic.rarity}</span>
+            <span class="hall-badge-small">${relic.hall}</span>
+          </div>
+          <div class="relic-card-body">
+            <h4>${relic.name}</h4>
+            <div class="relic-era">${relic.era}</div>
+            <p>${relic.description}</p>
+            <a href="#" class="btn-detail">查看详情</a>
+          </div>
+        </div>
+      `).join('');
+      container.innerHTML = html;
+
+      // 重新初始化滚动动画
+      MuseumUtils.initPageAnimations();
+    }
+
+    // 筛选标签交互
+    function initFilterTags() {
+      const tags = document.querySelectorAll('.filter-tag');
+      tags.forEach(tag => {
+        tag.addEventListener('click', function() {
+          tags.forEach(t => t.classList.remove('active'));
+          this.classList.add('active');
+          const filter = this.dataset.filter;
+          renderRelicsGrid(filter);
+        });
+      });
+    }
+
+    // 分类导航交互
+    function initCategoryNav() {
+      const items = document.querySelectorAll('.category-item');
+      items.forEach(item => {
+        item.addEventListener('click', function() {
+          items.forEach(i => i.classList.remove('active'));
+          this.classList.add('active');
+          const category = this.dataset.category;
+          // 简单模拟分类筛选
+          let filter = 'all';
+          if (category === 'document') filter = '文献手稿';
+          else if (category === 'object') filter = '生活用品';
+          else if (category === 'image') filter = '一级文物';
+          else if (category === 'memorial') filter = '纪念物品';
+
+          // 同步更新筛选标签
+          const filterTags = document.querySelectorAll('.filter-tag');
+          filterTags.forEach(t => {
+            t.classList.toggle('active', t.dataset.filter === filter);
+          });
+          renderRelicsGrid(filter);
+        });
+      });
+    }
+
+    // 数字滚动动画
+    function animateStats() {
+      const statNums = document.querySelectorAll('.stat-num');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const el = entry.target;
+            const target = parseInt(el.dataset.target);
+            MuseumUtils.animateNumber(el, target, 1500);
+            observer.unobserve(el);
+          }
+        });
+      }, { threshold: 0.5 });
+      statNums.forEach(el => observer.observe(el));
+    }
+
+    // 初始化
+    document.addEventListener('DOMContentLoaded', function() {
+      renderRelicsGrid();
+      initFilterTags();
+      initCategoryNav();
+      animateStats();
+      MuseumUtils.initPageAnimations();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>红色电子AI博物馆 - 让红色历史"活"起来</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ---------- Hero 增强 ---------- */
+    .hero {
+      min-height: 640px;
+    }
+    .hero-pattern {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image:
+        radial-gradient(circle at 25% 25%, rgba(212, 175, 55, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(196, 30, 58, 0.12) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .hero-decoration {
+      position: absolute;
+      right: 5%;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-decoration::before {
+      content: '★';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 180px;
+      color: rgba(212, 175, 55, 0.1);
+      animation: pulse 4s ease-in-out infinite;
+    }
+    .hero-stats {
+      flex-wrap: wrap;
+    }
+
+    /* ---------- 通用区块 ---------- */
+    .section {
+      padding: var(--space-20) 0;
+    }
+    .section-alt {
+      background: var(--surface-2);
+    }
+    .section-dark {
+      background: linear-gradient(180deg, #1A0F0F 0%, #2A1818 100%);
+      color: #fff;
+    }
+    .section-dark .section-header h2 { color: #fff; }
+    .section-dark .section-header p { color: rgba(255,255,255,0.6); }
+    .section-dark .section-header .eyebrow { color: var(--gold-300); }
+
+    /* ---------- 精选展厅 ---------- */
+    .halls-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-6);
+    }
+    .hall-card {
+      position: relative;
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      min-height: 280px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: var(--space-6);
+      color: #fff;
+      cursor: pointer;
+      transition: all var(--duration-base) var(--ease-standard);
+      text-decoration: none;
+    }
+    .hall-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: inherit;
+      z-index: 0;
+    }
+    .hall-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.7) 100%);
+      z-index: 1;
+    }
+    .hall-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-xl);
+    }
+    .hall-card:hover .hall-icon {
+      transform: scale(1.1);
+    }
+    .hall-card .hall-icon {
+      position: absolute;
+      top: var(--space-6);
+      right: var(--space-6);
+      width: 56px;
+      height: 56px;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      z-index: 2;
+      backdrop-filter: blur(8px);
+      transition: transform var(--duration-base) var(--ease-standard);
+    }
+    .hall-card .hall-tags {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      gap: var(--space-2);
+      margin-bottom: var(--space-3);
+    }
+    .hall-card .hall-title {
+      position: relative;
+      z-index: 2;
+      font-family: var(--font-display);
+      font-size: var(--fs-2xl);
+      font-weight: 700;
+      margin-bottom: var(--space-2);
+    }
+    .hall-card .hall-subtitle {
+      position: relative;
+      z-index: 2;
+      font-size: var(--fs-sm);
+      color: rgba(255,255,255,0.8);
+      margin-bottom: var(--space-3);
+    }
+    .hall-card .hall-desc {
+      position: relative;
+      z-index: 2;
+      font-size: var(--fs-sm);
+      color: rgba(255,255,255,0.7);
+      line-height: 1.6;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .hall-card .hall-meta {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      gap: var(--space-4);
+      margin-top: var(--space-4);
+      padding-top: var(--space-4);
+      border-top: 1px solid rgba(255,255,255,0.15);
+      font-size: var(--fs-xs);
+      color: rgba(255,255,255,0.6);
+    }
+    .hall-card .hall-meta span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* ---------- 镇馆之宝 ---------- */
+    .treasures-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-6);
+    }
+    .treasure-card {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: var(--space-6);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      transition: all var(--duration-base) var(--ease-standard);
+      cursor: pointer;
+    }
+    .treasure-card:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-4px);
+      border-color: var(--gold-300);
+    }
+    .treasure-image {
+      position: relative;
+      min-height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.3);
+      font-size: 64px;
+    }
+    .treasure-image .rarity-badge {
+      position: absolute;
+      top: var(--space-3);
+      left: var(--space-3);
+      padding: 2px 10px;
+      background: rgba(212, 175, 55, 0.9);
+      color: var(--gray-800);
+      font-size: var(--fs-xs);
+      font-weight: 600;
+      border-radius: var(--radius-full);
+      backdrop-filter: blur(4px);
+    }
+    .treasure-content {
+      padding: var(--space-6) var(--space-6) var(--space-6) 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .treasure-era {
+      font-size: var(--fs-sm);
+      color: var(--color-primary);
+      font-weight: 600;
+      margin-bottom: var(--space-2);
+    }
+    .treasure-name {
+      font-family: var(--font-display);
+      font-size: var(--fs-xl);
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: var(--space-2);
+    }
+    .treasure-desc {
+      font-size: var(--fs-sm);
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: var(--space-4);
+    }
+    .treasure-hall {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--fs-xs);
+      color: var(--text-muted);
+    }
+    .treasure-hall::before {
+      content: '';
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--gold-400);
+    }
+
+    /* ---------- AI互动体验 ---------- */
+    .ai-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-6);
+    }
+    .ai-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-8);
+      transition: all var(--duration-base) var(--ease-standard);
+      cursor: pointer;
+      text-decoration: none;
+      display: block;
+      position: relative;
+      overflow: hidden;
+    }
+    .ai-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--color-primary), var(--gold-400));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform var(--duration-base) var(--ease-standard);
+    }
+    .ai-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--red-200);
+    }
+    .ai-card:hover::before {
+      transform: scaleX(1);
+    }
+    .ai-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: var(--space-4);
+      background: var(--red-50);
+      color: var(--red-500);
+    }
+    .ai-card h3 {
+      font-size: var(--fs-lg);
+      margin-bottom: var(--space-2);
+      color: var(--text);
+    }
+    .ai-card p {
+      font-size: var(--fs-sm);
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+    .ai-card .ai-arrow {
+      margin-top: var(--space-4);
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--fs-sm);
+      color: var(--color-primary);
+      font-weight: 600;
+      transition: gap var(--duration-fast);
+    }
+    .ai-card:hover .ai-arrow {
+      gap: var(--space-3);
+    }
+
+    /* ---------- 红色精神谱系 ---------- */
+    .spirits-flow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-4);
+      justify-content: center;
+    }
+    .spirit-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-4) var(--space-6);
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius-lg);
+      backdrop-filter: blur(8px);
+      transition: all var(--duration-base) var(--ease-standard);
+      min-width: 240px;
+    }
+    .spirit-item:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(212, 175, 55, 0.3);
+      transform: translateY(-2px);
+    }
+    .spirit-symbol {
+      font-size: 32px;
+      flex-shrink: 0;
+    }
+    .spirit-info {
+      flex: 1;
+    }
+    .spirit-name {
+      font-family: var(--font-display);
+      font-size: var(--fs-base);
+      font-weight: 700;
+      color: var(--gold-300);
+      margin-bottom: 2px;
+    }
+    .spirit-core {
+      font-size: var(--fs-xs);
+      color: rgba(255,255,255,0.6);
+      line-height: 1.4;
+    }
+    .spirit-period {
+      font-size: 11px;
+      color: rgba(255,255,255,0.4);
+      margin-top: 2px;
+    }
+
+    /* ---------- 英烈墙 ---------- */
+    .heroes-section {
+      background: linear-gradient(180deg, #0F0A0A 0%, #1A0F0F 50%, #0F0A0A 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .heroes-section::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image:
+        radial-gradient(ellipse at top center, rgba(196, 30, 58, 0.15) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .heroes-wall {
+      display: flex;
+      gap: var(--space-6);
+      overflow-x: auto;
+      padding: var(--space-4) 0 var(--space-8);
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(212, 175, 55, 0.3) transparent;
+    }
+    .heroes-wall::-webkit-scrollbar {
+      height: 6px;
+    }
+    .heroes-wall::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0.05);
+      border-radius: 3px;
+    }
+    .heroes-wall::-webkit-scrollbar-thumb {
+      background: rgba(212, 175, 55, 0.3);
+      border-radius: 3px;
+    }
+    .hero-card {
+      flex-shrink: 0;
+      width: 280px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      scroll-snap-align: start;
+      transition: all var(--duration-base) var(--ease-standard);
+    }
+    .hero-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(212, 175, 55, 0.3);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+    }
+    .hero-avatar {
+      height: 200px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.2);
+      font-size: 72px;
+      font-family: var(--font-display);
+      font-weight: 700;
+    }
+    .hero-avatar::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 50%;
+      background: linear-gradient(180deg, transparent, rgba(0,0,0,0.4));
+    }
+    .hero-info {
+      padding: var(--space-5);
+    }
+    .hero-name {
+      font-family: var(--font-display);
+      font-size: var(--fs-xl);
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    .hero-title {
+      font-size: var(--fs-xs);
+      color: var(--gold-300);
+      margin-bottom: var(--space-2);
+    }
+    .hero-period {
+      font-size: var(--fs-xs);
+      color: rgba(255,255,255,0.4);
+      margin-bottom: var(--space-3);
+    }
+    .hero-quote {
+      font-size: var(--fs-sm);
+      color: rgba(255,255,255,0.7);
+      line-height: 1.6;
+      font-style: italic;
+      padding-left: var(--space-3);
+      border-left: 2px solid var(--gold-400);
+    }
+
+    /* ---------- CTA 号召区 ---------- */
+    .cta-section {
+      background: linear-gradient(135deg, var(--red-600) 0%, var(--red-800) 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      top: -50%; right: -10%;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
+    }
+    .cta-section::after {
+      content: '';
+      position: absolute;
+      bottom: -30%; left: -5%;
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+    }
+    .cta-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      color: #fff;
+    }
+    .cta-content h2 {
+      font-size: var(--fs-4xl);
+      color: #fff;
+      margin-bottom: var(--space-4);
+    }
+    .cta-content p {
+      font-size: var(--fs-lg);
+      color: rgba(255,255,255,0.8);
+      max-width: 600px;
+      margin: 0 auto var(--space-8);
+    }
+    .cta-actions {
+      display: flex;
+      gap: var(--space-4);
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ---------- 响应式 ---------- */
+    @media (max-width: 1024px) {
+      .halls-grid { grid-template-columns: repeat(2, 1fr); }
+      .ai-grid { grid-template-columns: repeat(2, 1fr); }
+      .treasures-grid { grid-template-columns: 1fr; }
+      .hero-decoration { display: none; }
+      .cta-content h2 { font-size: var(--fs-3xl); }
+    }
+    @media (max-width: 768px) {
+      .section { padding: var(--space-12) 0; }
+      .halls-grid { grid-template-columns: 1fr; }
+      .ai-grid { grid-template-columns: 1fr; }
+      .treasure-card { grid-template-columns: 1fr; }
+      .treasure-image { min-height: 160px; }
+      .treasure-content { padding: 0 var(--space-6) var(--space-6); }
+      .hero-stats { gap: var(--space-6); }
+      .hero-stat .num { font-size: var(--fs-2xl); }
+      .cta-content h2 { font-size: var(--fs-2xl); }
+      .spirit-item { min-width: 100%; flex: 1 1 100%; }
+    }
+  </style>
+</head>
+<body>
+  <!-- 导航栏 -->
+  <div id="navbar-container"></div>
+
+  <main>
+    <!-- Hero 大横幅 -->
+    <section class="hero">
+      <div class="hero-pattern"></div>
+      <div class="hero-decoration"></div>
+      <div class="container">
+        <div class="hero-content animate-fadeInUp">
+          <div class="eyebrow">
+            <span>★</span>
+            <span>全国爱国主义教育示范基地</span>
+          </div>
+          <h1>让红色历史<span class="highlight">"活"</span>起来</h1>
+          <p class="desc">
+            以人工智能技术赋能红色文化传播，运用AI导览、语音讲解、老照片修复、场景还原等前沿技术，
+            打造沉浸式、互动式的线上红色教育新阵地。
+          </p>
+          <div class="hero-actions">
+            <a href="halls.html" class="btn btn-primary btn-lg">
+              <span>开始参观</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </a>
+            <a href="ai-center.html" class="btn btn-gold btn-lg">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.09 6.26L20 9.27l-4.5 4.08L16.18 20 12 17.27 7.82 20l.68-6.65L4 9.27l5.91-1.01L12 2z"></path></svg>
+              <span>AI体验</span>
+            </a>
+          </div>
+          <div class="hero-stats">
+            <div class="hero-stat">
+              <div class="num" id="stat-halls">0</div>
+              <div class="label">主题展厅</div>
+            </div>
+            <div class="hero-stat">
+              <div class="num" id="stat-relics">0</div>
+              <div class="label">珍贵文物</div>
+            </div>
+            <div class="hero-stat">
+              <div class="num" id="stat-heroes">0</div>
+              <div class="label">英烈人物</div>
+            </div>
+            <div class="hero-stat">
+              <div class="num" id="stat-visitors">0</div>
+              <div class="label">累计访问</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 精选展厅 -->
+    <section class="section">
+      <div class="container">
+        <div class="section-header animate-on-scroll">
+          <div class="eyebrow">EXHIBITION HALLS</div>
+          <h2>精选展厅</h2>
+          <p>六大主题展厅，涵盖党史历程、革命文物、英雄人物、战役历史、红色精神与新时代成就</p>
+          <div class="divider-line"></div>
+        </div>
+        <div class="halls-grid" id="halls-grid">
+          <!-- 由JS动态生成 -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 镇馆之宝 -->
+    <section class="section section-alt">
+      <div class="container">
+        <div class="section-header animate-on-scroll">
+          <div class="eyebrow">NATIONAL TREASURES</div>
+          <h2>镇馆之宝</h2>
+          <p>每一件文物都承载着一段波澜壮阔的历史，见证着先辈们的奋斗与牺牲</p>
+          <div class="divider-line"></div>
+        </div>
+        <div class="treasures-grid" id="treasures-grid">
+          <!-- 由JS动态生成 -->
+        </div>
+      </div>
+    </section>
+
+    <!-- AI互动体验 -->
+    <section class="section">
+      <div class="container">
+        <div class="section-header animate-on-scroll">
+          <div class="eyebrow">AI EXPERIENCE</div>
+          <h2>AI互动体验</h2>
+          <p>人工智能技术赋能红色文化，让您获得前所未有的沉浸式参观体验</p>
+          <div class="divider-line"></div>
+        </div>
+        <div class="ai-grid" id="ai-grid">
+          <!-- 由JS动态生成 -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 红色精神谱系 -->
+    <section class="section section-dark">
+      <div class="container">
+        <div class="section-header animate-on-scroll">
+          <div class="eyebrow">RED SPIRIT</div>
+          <h2>红色精神谱系</h2>
+          <p>中国共产党在百年奋斗中构建起的精神谱系，是党和人民的宝贵精神财富</p>
+          <div class="divider-line"></div>
+        </div>
+        <div class="spirits-flow" id="spirits-flow">
+          <!-- 由JS动态生成 -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 英烈墙 -->
+    <section class="section heroes-section">
+      <div class="container">
+        <div class="section-header animate-on-scroll">
+          <div class="eyebrow">HEROES WALL</div>
+          <h2 style="color:#fff;">英烈墙</h2>
+          <p style="color:rgba(255,255,255,0.6);">一个有希望的民族不能没有英雄，一个有前途的国家不能没有先锋</p>
+          <div class="divider-line"></div>
+        </div>
+        <div class="heroes-wall" id="heroes-wall">
+          <!-- 由JS动态生成 -->
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA号召区 -->
+    <section class="section cta-section">
+      <div class="container">
+        <div class="cta-content animate-on-scroll">
+          <h2>开启您的红色之旅</h2>
+          <p>穿越时空，重温峥嵘岁月。用AI科技点亮红色记忆，让革命精神代代相传。</p>
+          <div class="cta-actions">
+            <a href="halls.html" class="btn btn-gold btn-lg">
+              <span>立即参观</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </a>
+            <a href="ai-center.html" class="btn btn-lg" style="background: rgba(255,255,255,0.15); color: #fff; border-color: rgba(255,255,255,0.3); backdrop-filter: blur(8px);">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.09 6.26L20 9.27l-4.5 4.08L16.18 20 12 17.27 7.82 20l.68-6.65L4 9.27l5.91-1.01L12 2z"></path></svg>
+              <span>体验AI互动</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 底部 -->
+  <div id="footer-container"></div>
+
+  <script src="mock.js"></script>
+  <script src="app.js"></script>
+  <script>
+    // 渲染导航和底部
+    document.getElementById('navbar-container').innerHTML = MuseumUtils.getNavHTML('home');
+    document.getElementById('footer-container').innerHTML = MuseumUtils.getFooterHTML();
+
+    // 图标映射
+    const iconMap = {
+      flag: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>',
+      scroll: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14v14z"></path><path d="M22 19V7h-3v14H5"></path></svg>',
+      award: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>',
+      swords: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"></polyline><line x1="13" y1="19" x2="19" y2="13"></line><line x1="16" y1="16" x2="20" y2="20"></line><line x1="19" y1="21" x2="21" y2="19"></line><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"></polyline><line x1="5" y1="14" x2="9" y2="18"></line><line x1="7" y1="17" x2="4" y2="20"></line><line x1="3" y1="21" x2="5" y2="19"></line></svg>',
+      sparkles: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.09 6.26L20 9.27l-4.5 4.08L16.18 20 12 17.27 7.82 20l.68-6.65L4 9.27l5.91-1.01L12 2z"></path></svg>',
+      'trending-up': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>',
+      bot: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path><line x1="8" y1="16" x2="8" y2="16"></line><line x1="16" y1="16" x2="16" y2="16"></line></svg>',
+      'message-circle': '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>',
+      image: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>',
+      palette: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5"></circle><circle cx="17.5" cy="10.5" r=".5"></circle><circle cx="8.5" cy="7.5" r=".5"></circle><circle cx="6.5" cy="12.5" r=".5"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.555C21.965 6.012 17.461 2 12 2z"></path></svg>',
+      'volume-2': '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>',
+      calendar: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>'
+    };
+
+    // 展厅链接映射
+    const hallLinks = {
+      'party-founding': 'hall-party-history.html',
+      'revolutionary-relics': 'hall-relics.html'
+    };
+
+    // 渲染精选展厅
+    function renderHalls() {
+      const grid = document.getElementById('halls-grid');
+      grid.innerHTML = MOCK.halls.map((hall, index) => {
+        const link = hallLinks[hall.id] || 'halls.html';
+        return `
+          <a href="${link}" class="hall-card animate-on-scroll" style="background: ${hall.cover}; animation-delay: ${index * 0.1}s;">
+            <div class="hall-icon">${iconMap[hall.icon] || '📜'}</div>
+            <div class="hall-tags">
+              <span class="tag tag-dark">${hall.category}</span>
+            </div>
+            <div class="hall-title">${hall.title}</div>
+            <div class="hall-subtitle">${hall.subtitle}</div>
+            <div class="hall-desc">${hall.description}</div>
+            <div class="hall-meta">
+              <span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="9" y1="9" x2="15" y2="9"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+                ${hall.items}件展品
+              </span>
+              <span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                ${hall.views}
+              </span>
+            </div>
+          </a>
+        `;
+      }).join('');
+    }
+
+    // 渲染镇馆之宝
+    function renderTreasures() {
+      const grid = document.getElementById('treasures-grid');
+      const relics = MOCK.relics.slice(0, 4);
+      grid.innerHTML = relics.map((relic, index) => `
+        <div class="treasure-card animate-on-scroll" style="animation-delay: ${index * 0.1}s;">
+          <div class="treasure-image" style="background: ${relic.image};">
+            <span class="rarity-badge">${relic.rarity}</span>
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+          </div>
+          <div class="treasure-content">
+            <div class="treasure-era">${relic.era}</div>
+            <div class="treasure-name">${relic.name}</div>
+            <div class="treasure-desc">${relic.description}</div>
+            <div class="treasure-hall">${relic.hall}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // 渲染AI功能
+    function renderAIFeatures() {
+      const grid = document.getElementById('ai-grid');
+      const colorMap = {
+        red: 'var(--red-50)',
+        gold: 'var(--gold-50)',
+        blue: '#E3F2FD',
+        green: '#E8F5E9',
+        purple: '#F3E5F5',
+        orange: '#FFF3E0'
+      };
+      const textColorMap = {
+        red: 'var(--red-500)',
+        gold: 'var(--gold-500)',
+        blue: '#1976D2',
+        green: '#388E3C',
+        purple: '#7B1FA2',
+        orange: '#F57C00'
+      };
+      grid.innerHTML = MOCK.aiFeatures.map((feat, index) => `
+        <a href="ai-center.html#${feat.id}" class="ai-card animate-on-scroll" style="animation-delay: ${index * 0.1}s;">
+          <div class="ai-icon" style="background: ${colorMap[feat.color]}; color: ${textColorMap[feat.color]};">
+            ${iconMap[feat.icon] || '✨'}
+          </div>
+          <h3>${feat.name}</h3>
+          <p>${feat.desc}</p>
+          <div class="ai-arrow">
+            <span>了解更多</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </div>
+        </a>
+      `).join('');
+    }
+
+    // 渲染红色精神
+    function renderSpirits() {
+      const flow = document.getElementById('spirits-flow');
+      flow.innerHTML = MOCK.spirits.map((spirit, index) => `
+        <div class="spirit-item animate-on-scroll" style="animation-delay: ${index * 0.05}s;">
+          <div class="spirit-symbol">${spirit.symbol}</div>
+          <div class="spirit-info">
+            <div class="spirit-name">${spirit.name}</div>
+            <div class="spirit-core">${spirit.core}</div>
+            <div class="spirit-period">${spirit.period}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // 渲染英烈墙
+    function renderHeroes() {
+      const wall = document.getElementById('heroes-wall');
+      wall.innerHTML = MOCK.heroes.map((hero, index) => `
+        <div class="hero-card animate-on-scroll" style="animation-delay: ${index * 0.1}s;">
+          <div class="hero-avatar" style="background: ${hero.image};">
+            ${hero.name.charAt(0)}
+          </div>
+          <div class="hero-info">
+            <div class="hero-name">${hero.name}</div>
+            <div class="hero-title">${hero.title}</div>
+            <div class="hero-period">${hero.period}</div>
+            <div class="hero-quote">"${hero.quote}"</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // 数字动画
+    function animateStats() {
+      const stats = MOCK.stats;
+      MuseumUtils.animateNumber(document.getElementById('stat-halls'), stats.halls);
+      MuseumUtils.animateNumber(document.getElementById('stat-relics'), stats.relics);
+      MuseumUtils.animateNumber(document.getElementById('stat-heroes'), stats.heroes);
+      
+      // 访问量特殊处理（带万+）
+      const visitorsEl = document.getElementById('stat-visitors');
+      const visitorNum = 1280;
+      const startTime = performance.now();
+      function updateVisitors(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / 2000, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = Math.floor(visitorNum * eased);
+        visitorsEl.textContent = current + '万+';
+        if (progress < 1) requestAnimationFrame(updateVisitors);
+      }
+      requestAnimationFrame(updateVisitors);
+    }
+
+    // 初始化
+    document.addEventListener('DOMContentLoaded', function() {
+      renderHalls();
+      renderTreasures();
+      renderAIFeatures();
+      renderSpirits();
+      renderHeroes();
+      
+      // 延迟触发数字动画
+      setTimeout(animateStats, 500);
+      
+      // 重新初始化滚动动画（因为内容是动态生成的）
+      setTimeout(() => {
+        MuseumUtils.initPageAnimations();
+      }, 100);
+    });
+  </script>
+</body>
+</html>

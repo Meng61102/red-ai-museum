@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>虚拟展厅 - 红色电子AI博物馆</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ---------- 页面头部 ---------- */
+    .page-header {
+      background: linear-gradient(135deg, #1A0A0A 0%, #2C1810 50%, #1A2332 100%);
+      position: relative;
+      overflow: hidden;
+      padding: var(--space-20) 0 var(--space-16);
+    }
+    .page-header::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        radial-gradient(ellipse at 30% 40%, rgba(196, 30, 58, 0.2) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 60%, rgba(212, 175, 55, 0.12) 0%, transparent 40%);
+      pointer-events: none;
+    }
+    .page-header-content {
+      position: relative;
+      z-index: 2;
+      color: #fff;
+    }
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--fs-sm);
+      color: rgba(255,255,255,0.6);
+      margin-bottom: var(--space-6);
+    }
+    .breadcrumb a {
+      color: rgba(255,255,255,0.6);
+      transition: color var(--duration-fast);
+    }
+    .breadcrumb a:hover {
+      color: var(--gold-300);
+    }
+    .breadcrumb .separator {
+      color: rgba(255,255,255,0.3);
+    }
+    .breadcrumb .current {
+      color: var(--gold-300);
+    }
+    .page-header h1 {
+      font-size: var(--fs-5xl);
+      color: #fff;
+      margin-bottom: var(--space-4);
+      line-height: 1.2;
+    }
+    .page-header h1 .highlight {
+      background: linear-gradient(135deg, var(--gold-300), var(--gold-500));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .page-header .intro {
+      font-size: var(--fs-lg);
+      color: rgba(255,255,255,0.7);
+      max-width: 640px;
+      line-height: 1.8;
+    }
+    .page-header-stats {
+      display: flex;
+      gap: var(--space-10);
+      margin-top: var(--space-8);
+      padding-top: var(--space-6);
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    .page-header-stat .num {
+      font-family: var(--font-display);
+      font-size: var(--fs-2xl);
+      font-weight: 700;
+      color: var(--gold-300);
+      line-height: 1;
+    }
+    .page-header-stat .label {
+      font-size: var(--fs-sm);
+      color: rgba(255,255,255,0.5);
+      margin-top: var(--space-2);
+    }
+
+    /* ---------- 筛选栏 ---------- */
+    .filter-bar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: var(--nav-height);
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+    .filter-bar .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-4) var(--space-6);
+      flex-wrap: wrap;
+      gap: var(--space-4);
+    }
+    .filter-tabs {
+      display: flex;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+    .filter-tab {
+      padding: var(--space-2) var(--space-4);
+      font-size: var(--fs-sm);
+      font-weight: 500;
+      color: var(--text-secondary);
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-standard);
+      border: 1px solid transparent;
+      background: transparent;
+    }
+    .filter-tab:hover {
+      color: var(--color-primary);
+      background: var(--red-50);
+    }
+    .filter-tab.active {
+      color: var(--color-primary);
+      background: var(--red-50);
+      border-color: var(--red-200);
+      font-weight: 600;
+    }
+    .filter-result {
+      font-size: var(--fs-sm);
+      color: var(--text-muted);
+    }
+    .filter-result strong {
+      color: var(--color-primary);
+      font-weight: 600;
+    }
+
+    /* ---------- 展厅网格 ---------- */
+    .halls-section {
+      padding: var(--space-16) 0;
+    }
+    .hall-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-8);
+    }
+    .hall-detail-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      transition: all var(--duration-base) var(--ease-standard);
+      display: flex;
+      flex-direction: column;
+    }
+    .hall-detail-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-xl);
+      border-color: var(--red-200);
+    }
+    .hall-cover {
+      position: relative;
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .hall-cover::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.3) 100%);
+    }
+    .hall-cover-icon {
+      width: 72px;
+      height: 72px;
+      background: rgba(255,255,255,0.15);
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: var(--radius-xl);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      backdrop-filter: blur(8px);
+      z-index: 1;
+    }
+    .hall-cover-badge {
+      position: absolute;
+      top: var(--space-4);
+      left: var(--space-4);
+      z-index: 2;
+    }
+    .hall-cover-views {
+      position: absolute;
+      top: var(--space-4);
+      right: var(--space-4);
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(8px);
+      border-radius: var(--radius-full);
+      color: #fff;
+      font-size: var(--fs-xs);
+    }
+    .hall-detail-body {
+      padding: var(--space-6);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .hall-detail-title {
+      font-family: var(--font-display);
+      font-size: var(--fs-2xl);
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: var(--space-2);
+    }
+    .hall-detail-subtitle {
+      font-size: var(--fs-sm);
+      color: var(--color-primary);
+      font-weight: 600;
+      margin-bottom: var(--space-4);
+    }
+    .hall-detail-desc {
+      font-size: var(--fs-sm);
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin-bottom: var(--space-6);
+      flex: 1;
+    }
+    .hall-detail-meta {
+      display: flex;
+      gap: var(--space-6);
+      padding-top: var(--space-4);
+      border-top: 1px solid var(--border-light);
+      margin-bottom: var(--space-5);
+    }
+    .hall-meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .hall-meta-item .value {
+      font-family: var(--font-display);
+      font-size: var(--fs-xl);
+      font-weight: 700;
+      color: var(--text);
+    }
+    .hall-meta-item .label {
+      font-size: var(--fs-xs);
+      color: var(--text-muted);
+    }
+    .hall-detail-footer {
+      display: flex;
+      gap: var(--space-3);
+    }
+
+    /* ---------- 参观指南 ---------- */
+    .guide-section {
+      background: var(--surface-2);
+      padding: var(--space-16) 0;
+    }
+    .guide-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-6);
+    }
+    .guide-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-8);
+      text-align: center;
+      transition: all var(--duration-base) var(--ease-standard);
+    }
+    .guide-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--gold-200);
+    }
+    .guide-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto var(--space-4);
+      background: linear-gradient(135deg, var(--red-50), var(--gold-50));
+      border-radius: var(--radius-xl);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--red-500);
+    }
+    .guide-card h3 {
+      font-size: var(--fs-xl);
+      margin-bottom: var(--space-3);
+    }
+    .guide-card p {
+      font-size: var(--fs-sm);
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+    .guide-card ul {
+      text-align: left;
+      margin-top: var(--space-4);
+    }
+    .guide-card ul li {
+      font-size: var(--fs-sm);
+      color: var(--text-secondary);
+      padding: var(--space-2) 0;
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-2);
+    }
+    .guide-card ul li::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--gold-400);
+      margin-top: 8px;
+      flex-shrink: 0;
+    }
+
+    /* ---------- 最新动态 ---------- */
+    .news-section {
+      padding: var(--space-16) 0;
+    }
+    .news-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-6);
+    }
+    .news-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      transition: all var(--duration-base) var(--ease-standard);
+      cursor: pointer;
+    }
+    .news-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--red-200);
+    }
+    .news-cover {
+      height: 160px;
+      position: relative;
+      overflow: hidden;
+    }
+    .news-cover::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.2) 100%);
+    }
+    .news-tag {
+      position: absolute;
+      top: var(--space-3);
+      left: var(--space-3);
+      z-index: 2;
+    }
+    .news-body {
+      padding: var(--space-5);
+    }
+    .news-date {
+      font-size: var(--fs-xs);
+      color: var(--text-muted);
+      margin-bottom: var(--space-2);
+    }
+    .news-title {
+      font-family: var(--font-display);
+      font-size: var(--fs-lg);
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: var(--space-3);
+      line-height: 1.4;
+    }
+    .news-summary {
+      font-size: var(--fs-sm);
+      color: var(--text-secondary);
+      line-height: 1.7;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* ---------- 响应式 ---------- */
+    @media (max-width: 1024px) {
+      .hall-grid { grid-template-columns: 1fr; gap: var(--space-6); }
+      .guide-grid { grid-template-columns: 1fr 1fr; }
+      .news-grid { grid-template-columns: 1fr 1fr; }
+      .page-header h1 { font-size: var(--fs-4xl); }
+    }
+    @media (max-width: 768px) {
+      .page-header { padding: var(--space-12) 0 var(--space-10); }
+      .page-header h1 { font-size: var(--fs-3xl); }
+      .page-header-stats { flex-wrap: wrap; gap: var(--space-6); }
+      .guide-grid { grid-template-columns: 1fr; }
+      .news-grid { grid-template-columns: 1fr; }
+      .filter-bar .container { flex-direction: column; align-items: flex-start; }
+      .hall-detail-meta { gap: var(--space-4); }
+      .hall-meta-item .value { font-size: var(--fs-lg); }
+    }
+  </style>
+</head>
+<body>
+  <!-- 导航栏 -->
+  <div id="navbar-container"></div>
+
+  <main>
+    <!-- 页面头部 -->
+    <section class="page-header">
+      <div class="container">
+        <div class="page-header-content animate-fadeInUp">
+          <div class="breadcrumb">
+            <a href="index.html">首页</a>
+            <span class="separator">/</span>
+            <span class="current">虚拟展厅</span>
+          </div>
+          <h1>探索<span class="highlight">虚拟展厅</span></h1>
+          <p class="intro">
+            六大主题展厅，全方位展现中国共产党百年奋斗历程和辉煌成就。
+            运用AI技术打造沉浸式参观体验，让您足不出户就能感受红色文化的魅力。
+          </p>
+          <div class="page-header-stats">
+            <div class="page-header-stat">
+              <div class="num">6</div>
+              <div class="label">主题展厅</div>
+            </div>
+            <div class="page-header-stat">
+              <div class="num">782</div>
+              <div class="label">珍贵展品</div>
+            </div>
+            <div class="page-header-stat">
+              <div class="num">885.1万</div>
+              <div class="label">累计参观</div>
+            </div>
+            <div class="page-header-stat">
+              <div class="num">24h</div>
+              <div class="label">全天候开放</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 筛选栏 -->
+    <div class="filter-bar">
+      <div class="container">
+        <div class="filter-tabs" id="filter-tabs">
+          <button class="filter-tab active" data-category="all">全部展厅</button>
+          <button class="filter-tab" data-category="党史历程">党史历程</button>
+          <button class="filter-tab" data-category="珍贵文物">珍贵文物</button>
+          <button class="filter-tab" data-category="英雄人物">英雄人物</button>
+          <button class="filter-tab" data-category="战役史">战役史</button>
+          <button class="filter-tab" data-category="精神谱系">精神谱系</button>
+          <button class="filter-tab" data-category="时代成就">时代成就</button>
+        </div>
+        <div class="filter-result">
+          共 <strong id="result-count">6</strong> 个展厅
+        </div>
+      </div>
+    </div>
+
+    <!-- 展厅网格 -->
+    <section class="halls-section">
+      <div class="container">
+        <div class="hall-grid" id="hall-grid">
+          <!-- 由JS动态生成 -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 参观指南 -->
+    <section class="guide-section">
+      <div class="container">
+        <div class="section-header animate-on-scroll">
+          <div class="eyebrow">VISIT GUIDE</div>
+          <h2>参观指南</h2>
+          <p>为您提供全方位的参观指引，打造最佳的线上博物馆体验</p>
+          <div class="divider-line"></div>
+        </div>
+        <div class="guide-grid">
+          <div class="guide-card animate-on-scroll">
+            <div class="guide-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            </div>
+            <h3>参观时长</h3>
+            <p>建议预留充足时间深度体验每个展厅</p>
+            <ul>
+              <li>快速浏览：约 30-45 分钟</li>
+              <li>常规参观：约 1.5-2 小时</li>
+              <li>深度体验：约 3-4 小时</li>
+              <li>AI互动体验：约 30-60 分钟</li>
+            </ul>
+          </div>
+          <div class="guide-card animate-on-scroll" style="animation-delay: 0.1s;">
+            <div class="guide-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+            </div>
+            <h3>推荐路线</h3>
+            <p>精心设计的参观路线，带您领略红色历史脉络</p>
+            <ul>
+              <li>经典路线：建党历程 → 革命文物 → 英烈人物</li>
+              <li>深度路线：全展厅顺序参观</li>
+              <li>主题路线：按兴趣选择对应展厅</li>
+              <li>AI路线：体验全部AI互动功能</li>
+            </ul>
+          </div>
+          <div class="guide-card animate-on-scroll" style="animation-delay: 0.2s;">
+            <div class="guide-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            </div>
+            <h3>开放信息</h3>
+            <p>线上博物馆全天候开放，随时开启红色之旅</p>
+            <ul>
+              <li>开放时间：全年 7x24 小时</li>
+              <li>门票价格：永久免费参观</li>
+              <li>AI服务：每日 8:00-24:00</li>
+              <li>客服支持：工作日 9:00-18:00</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 最新动态 -->
+    <section class="news-section">
+      <div class="container">
+        <div class="section-header animate-on-scroll">
+          <div class="eyebrow">LATEST NEWS</div>
+          <h2>最新动态</h2>
+          <p>关注博物馆最新展览活动和更新资讯</p>
+          <div class="divider-line"></div>
+        </div>
+        <div class="news-grid">
+          <div class="news-card animate-on-scroll">
+            <div class="news-cover" style="background: linear-gradient(135deg, #C41E3A 0%, #7D1226 100%);">
+              <span class="tag tag-dark news-tag">展览更新</span>
+            </div>
+            <div class="news-body">
+              <div class="news-date">2026年8月15日</div>
+              <div class="news-title">"建党百年特展"全新上线 沉浸式体验党的光辉历程</div>
+              <div class="news-summary">为庆祝中国共产党成立105周年，我馆重磅推出"建党百年特展"，通过3D建模、AI还原等技术，沉浸式再现党的百年奋斗历程中的重要时刻。</div>
+            </div>
+          </div>
+          <div class="news-card animate-on-scroll" style="animation-delay: 0.1s;">
+            <div class="news-cover" style="background: linear-gradient(135deg, #D4AF37 0%, #8C720B 100%);">
+              <span class="tag tag-dark news-tag">AI新功能</span>
+            </div>
+            <div class="news-body">
+              <div class="news-date">2026年8月1日</div>
+              <div class="news-title">AI历史场景还原功能正式上线 输入描述即可生成历史画面</div>
+              <div class="news-summary">我馆全新推出AI历史场景还原功能，用户只需输入文字描述，AI即可生成对应的历史场景图像，让历史变得更加生动立体。</div>
+            </div>
+          </div>
+          <div class="news-card animate-on-scroll" style="animation-delay: 0.2s;">
+            <div class="news-cover" style="background: linear-gradient(135deg, #1E88E5 0%, #0D47A1 100%);">
+              <span class="tag tag-dark news-tag">活动预告</span>
+            </div>
+            <div class="news-body">
+              <div class="news-date">2026年7月28日</div>
+              <div class="news-title">"红色记忆"线上征集活动启动 分享您身边的红色故事</div>
+              <div class="news-summary">我馆启动"红色记忆"线上征集活动，面向全社会征集红色老照片、革命故事、家书手迹等珍贵资料，入选作品将在博物馆永久展示。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 底部 -->
+  <div id="footer-container"></div>
+
+  <script src="mock.js"></script>
+  <script src="app.js"></script>
+  <script>
+    // 渲染导航和底部
+    document.getElementById('navbar-container').innerHTML = MuseumUtils.getNavHTML('halls');
+    document.getElementById('footer-container').innerHTML = MuseumUtils.getFooterHTML();
+
+    // 图标映射
+    const iconMap = {
+      flag: '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>',
+      scroll: '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14v14z"></path><path d="M22 19V7h-3v14H5"></path></svg>',
+      award: '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>',
+      swords: '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"></polyline><line x1="13" y1="19" x2="19" y2="13"></line><line x1="16" y1="16" x2="20" y2="20"></line><line x1="19" y1="21" x2="21" y2="19"></line><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"></polyline><line x1="5" y1="14" x2="9" y2="18"></line><line x1="7" y1="17" x2="4" y2="20"></line><line x1="3" y1="21" x2="5" y2="19"></line></svg>',
+      sparkles: '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.09 6.26L20 9.27l-4.5 4.08L16.18 20 12 17.27 7.82 20l.68-6.65L4 9.27l5.91-1.01L12 2z"></path></svg>',
+      'trending-up': '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>'
+    };
+
+    // 展厅链接映射
+    const hallLinks = {
+      'party-founding': 'hall-party-history.html',
+      'revolutionary-relics': 'hall-relics.html'
+    };
+
+    // 渲染展厅卡片
+    function renderHalls(category = 'all') {
+      const grid = document.getElementById('hall-grid');
+      const halls = category === 'all'
+        ? MOCK.halls
+        : MOCK.halls.filter(h => h.category === category);
+      
+      document.getElementById('result-count').textContent = halls.length;
+      
+      if (halls.length === 0) {
+        grid.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: var(--space-16) 0; color: var(--text-muted);">
+            <div style="font-size: 48px; margin-bottom: var(--space-4);">🔍</div>
+            <p>暂无此类展厅</p>
+          </div>
+        `;
+        return;
+      }
+      
+      grid.innerHTML = halls.map((hall, index) => {
+        const link = hallLinks[hall.id] || 'halls.html#' + hall.id;
+        return `
+          <div class="hall-detail-card animate-on-scroll" data-category="${hall.category}" style="animation-delay: ${index * 0.1}s;">
+            <div class="hall-cover" style="background: ${hall.cover};">
+              <span class="tag tag-dark hall-cover-badge">${hall.category}</span>
+              <div class="hall-cover-views">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                ${hall.views}
+              </div>
+              <div class="hall-cover-icon">
+                ${iconMap[hall.icon] || '📜'}
+              </div>
+            </div>
+            <div class="hall-detail-body">
+              <div class="hall-detail-title">${hall.title}</div>
+              <div class="hall-detail-subtitle">${hall.subtitle}</div>
+              <div class="hall-detail-desc">${hall.description}</div>
+              <div class="hall-detail-meta">
+                <div class="hall-meta-item">
+                  <span class="value">${hall.items}</span>
+                  <span class="label">件展品</span>
+                </div>
+                <div class="hall-meta-item">
+                  <span class="value">${hall.views}</span>
+                  <span class="label">次访问</span>
+                </div>
+                <div class="hall-meta-item">
+                  <span class="value">${Math.floor(Math.random() * 30 + 15)}</span>
+                  <span class="label">分钟参观</span>
+                </div>
+              </div>
+              <div class="hall-detail-footer">
+                <a href="${link}" class="btn btn-primary" style="flex: 1;">
+                  <span>进入展厅</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </a>
+                <a href="ai-center.html" class="btn btn-ghost">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.09 6.26L20 9.27l-4.5 4.08L16.18 20 12 17.27 7.82 20l.68-6.65L4 9.27l5.91-1.01L12 2z"></path></svg>
+                </a>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      // 重新初始化滚动动画
+      setTimeout(() => {
+        MuseumUtils.initPageAnimations();
+      }, 50);
+    }
+
+    // 筛选功能
+    function initFilter() {
+      const tabs = document.querySelectorAll('.filter-tab');
+      tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+          tabs.forEach(t => t.classList.remove('active'));
+          this.classList.add('active');
+          const category = this.dataset.category;
+          renderHalls(category);
+        });
+      });
+    }
+
+    // 初始化
+    document.addEventListener('DOMContentLoaded', function() {
+      renderHalls();
+      initFilter();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>红色地图 - 红色电子AI博物馆</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ========== Red Map Page Styles ========== */
+
+    /* Hero */
+    .map-hero {
+      position: relative;
+      min-height: 480px;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      background: linear-gradient(135deg, #1A0A0A 0%, #2C1810 40%, #1A2332 100%);
+    }
+    .map-hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(196, 30, 58, 0.25) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 30%, rgba(212, 175, 55, 0.15) 0%, transparent 40%);
+      pointer-events: none;
+    }
+    .map-hero-bg {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      opacity: 0.15;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px);
+      background-size: 30px 30px;
+    }
+    .map-hero-content {
+      position: relative;
+      z-index: 2;
+      padding: var(--space-20) 0;
+      color: #fff;
+    }
+    .map-hero-content .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-4);
+      background: rgba(196, 30, 58, 0.2);
+      border: 1px solid rgba(196, 30, 58, 0.4);
+      border-radius: var(--radius-full);
+      font-size: var(--fs-sm);
+      color: var(--gold-300);
+      margin-bottom: var(--space-6);
+      backdrop-filter: blur(8px);
+    }
+    .map-hero-content h1 {
+      font-size: var(--fs-5xl);
+      color: #fff;
+      margin-bottom: var(--space-4);
+      line-height: 1.15;
+    }
+    .map-hero-content h1 .highlight {
+      background: linear-gradient(135deg, var(--gold-300), var(--gold-500));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .map-hero-content .desc {
+      font-size: var(--fs-lg);
+      color: rgba(255, 255, 255, 0.75);
+      max-width: 560px;
+      margin-bottom: var(--space-8);
+      line-height: 1.8;
+    }
+    .map-hero-stats {
+      display: flex;
+      gap: var(--space-10);
+      padding-top: var(--space-8);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .map-hero-stat .num {
+      font-family: var(--font-display);
+      font-size: var(--fs-3xl);
+      font-weight: 700;
+      color: var(--gold-300);
+      line-height: 1;
+    }
+    .map-hero-stat .label {
+      font-size: var(--fs-sm);
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: var(--space-2);
+    }
+
+    /* Map Section */
+    .map-section {
+      padding: var(--space-20) 0;
+    }
+    .map-main {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: var(--space-6);
+      margin-bottom: var(--space-12);
+    }
+    .map-container {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      position: relative;
+      min-height: 600px;
+    }
+    .map-header {
+      padding: var(--space-4) var(--space-6);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .map-header h3 {
+      font-size: var(--fs-lg);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .map-header h3::before {
+      content: '';
+      width: 4px;
+      height: 20px;
+      background: linear-gradient(180deg, var(--red-500), var(--gold-400));
+      border-radius: 2px;
+    }
+    .map-legend {
+      display: flex;
+      gap: var(--space-4);
+      font-size: var(--fs-xs);
+      color: var(--text-muted);
+    }
+    .map-legend-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+    }
+    .map-legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .map-legend-dot.high { background: var(--red-500); }
+    .map-legend-dot.mid { background: var(--gold-400); }
+    .map-legend-dot.low { background: var(--gray-400); }
+
+    .map-canvas {
+      position: relative;
+      width: 100%;
+      height: 500px;
+      background: linear-gradient(135deg, #F5F0EA 0%, #EDE5DC 100%);
+      overflow: hidden;
+    }
+    .china-map-svg {
+      width: 100%;
+      height: 100%;
+    }
+    .china-map-svg .province {
+      fill: #fff;
+      stroke: var(--border);
+      stroke-width: 1;
+      transition: fill 0.2s;
+    }
+    .china-map-svg .province:hover {
+      fill: var(--red-50);
+    }
+    .map-marker {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      cursor: pointer;
+      z-index: 10;
+    }
+    .map-marker-dot {
+      border-radius: 50%;
+      background: var(--red-500);
+      box-shadow: 0 0 0 4px rgba(196, 30, 58, 0.2);
+      transition: all 0.2s;
+      position: relative;
+    }
+    .map-marker:hover .map-marker-dot {
+      transform: scale(1.3);
+      box-shadow: 0 0 0 6px rgba(196, 30, 58, 0.3);
+    }
+    .map-marker.importance-5 .map-marker-dot { width: 14px; height: 14px; }
+    .map-marker.importance-4 .map-marker-dot { width: 11px; height: 11px; }
+    .map-marker.importance-3 .map-marker-dot { width: 8px; height: 8px; }
+
+    .map-marker.importance-5 .map-marker-dot { background: var(--red-500); box-shadow: 0 0 0 4px rgba(196, 30, 58, 0.2); }
+    .map-marker.importance-4 .map-marker-dot { background: var(--gold-400); box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2); }
+    .map-marker.importance-3 .map-marker-dot { background: var(--red-400); box-shadow: 0 0 0 2px rgba(196, 30, 58, 0.15); }
+
+    .map-marker-tooltip {
+      position: absolute;
+      bottom: calc(100% + 10px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--gray-900);
+      color: #fff;
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-md);
+      font-size: var(--fs-xs);
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.2s;
+      z-index: 100;
+      pointer-events: none;
+    }
+    .map-marker-tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: var(--gray-900);
+    }
+    .map-marker:hover .map-marker-tooltip {
+      opacity: 1;
+      visibility: visible;
+    }
+    .map-marker-tooltip .name {
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    .map-marker-tooltip .loc {
+      color: var(--gold-300);
+    }
+
+    /* Site List Sidebar */
+    .site-list {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-md);
+    }
+    .site-list-header {
+      padding: var(--space-4) var(--space-5);
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .site-list-header .count {
+      font-size: var(--fs-xs);
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+    .site-list-items {
+      flex: 1;
+      overflow-y: auto;
+      max-height: 520px;
+    }
+    .site-list-item {
+      padding: var(--space-3) var(--space-5);
+      border-bottom: 1px solid var(--border-light);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .site-list-item:hover {
+      background: var(--red-50);
+    }
+    .site-list-item.active {
+      background: var(--red-50);
+      border-left: 3px solid var(--red-500);
+      padding-left: calc(var(--space-5) - 3px);
+    }
+    .site-list-item .name {
+      font-size: var(--fs-sm);
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+    .site-list-item .meta {
+      display: flex;
+      gap: var(--space-2);
+      font-size: var(--fs-xs);
+      color: var(--text-muted);
+    }
+    .site-list-item .meta .year {
+      color: var(--red-500);
+      font-weight: 500;
+    }
+
+    /* Filter Section */
+    .filter-section {
+      margin-bottom: var(--space-8);
+    }
+    .filter-tags {
+      display: flex;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .filter-tag {
+      padding: var(--space-2) var(--space-5);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      font-size: var(--fs-sm);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--surface);
+    }
+    .filter-tag:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+    .filter-tag.active {
+      background: var(--color-primary);
+      color: #fff;
+      border-color: var(--color-primary);
+    }
+
+    /* Routes Section */
+    .routes-section {
+      padding: var(--space-20) 0;
+      background: linear-gradient(180deg, var(--bg) 0%, #F5EDE8 100%);
+    }
+    .routes-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-6);
+    }
+    .route-card {
+      background: var(--surface);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      transition: all var(--duration-base);
+    }
+    .route-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-xl);
+    }
+    .route-header {
+      padding: var(--space-6);
+      background: linear-gradient(135deg, var(--red-600) 0%, var(--red-800) 100%);
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+    .route-header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: rgba(212, 175, 55, 0.15);
+    }
+    .route-badge {
+      display: inline-block;
+      padding: 2px 10px;
+      background: rgba(212, 175, 55, 0.2);
+      border: 1px solid var(--gold-400);
+      color: var(--gold-300);
+      border-radius: var(--radius-full);
+      font-size: var(--fs-xs);
+      font-weight: 500;
+      margin-bottom: var(--space-3);
+    }
+    .route-header h3 {
+      color: #fff;
+      font-size: var(--fs-xl);
+      margin-bottom: var(--space-2);
+      position: relative;
+    }
+    .route-info {
+      display: flex;
+      gap: var(--space-4);
+      font-size: var(--fs-sm);
+      color: rgba(255,255,255,0.7);
+      position: relative;
+    }
+    .route-info span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .route-body {
+      padding: var(--space-5);
+    }
+    .route-stops {
+      margin-bottom: var(--space-4);
+    }
+    .route-stops h5 {
+      font-size: var(--fs-sm);
+      color: var(--text-secondary);
+      margin-bottom: var(--space-3);
+    }
+    .route-stop-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+    }
+    .route-stop {
+      padding: 4px 10px;
+      background: var(--gray-50);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: var(--fs-xs);
+      color: var(--text-secondary);
+    }
+    .route-reason {
+      font-size: var(--fs-sm);
+      color: var(--text-muted);
+      line-height: 1.7;
+      padding-top: var(--space-4);
+      border-top: 1px solid var(--border-light);
+    }
+
+    /* Stats Section */
+    .stats-section {
+      padding: var(--space-20) 0;
+    }
+    .province-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-10);
+      align-items: center;
+    }
+    .stats-chart {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-8);
+      box-shadow: var(--shadow-md);
+    }
+    .stats-chart h3 {
+      font-size: var(--fs-xl);
+      margin-bottom: var(--space-6);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .stats-chart h3::before {
+      content: '';
+      width: 4px;
+      height: 22px;
+      background: linear-gradient(180deg, var(--red-500), var(--gold-400));
+      border-radius: 2px;
+    }
+    .bar-chart {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+    .bar-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+    .bar-label {
+      width: 80px;
+      font-size: var(--fs-sm);
+      color: var(--text-secondary);
+      flex-shrink: 0;
+    }
+    .bar-track {
+      flex: 1;
+      height: 28px;
+      background: var(--gray-50);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      position: relative;
+    }
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--red-500), var(--red-400));
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: var(--space-2);
+      transition: width 1s ease;
+      min-width: 40px;
+    }
+    .bar-fill.gold {
+      background: linear-gradient(90deg, var(--gold-500), var(--gold-300));
+    }
+    .bar-value {
+      font-size: var(--fs-xs);
+      font-weight: 600;
+      color: #fff;
+    }
+    .stats-highlights {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-5);
+    }
+    .stat-highlight-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-6);
+      text-align: center;
+      transition: all var(--duration-base);
+    }
+    .stat-highlight-card:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-4px);
+      border-color: var(--red-200);
+    }
+    .stat-highlight-card .icon {
+      font-size: 36px;
+      margin-bottom: var(--space-3);
+    }
+    .stat-highlight-card .num {
+      font-family: var(--font-display);
+      font-size: var(--fs-3xl);
+      font-weight: 700;
+      color: var(--red-500);
+      line-height: 1;
+      margin-bottom: var(--space-2);
+    }
+    .stat-highlight-card .label {
+      font-size: var(--fs-sm);
+      color: var(--text-muted);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .map-main { grid-template-columns: 1fr; }
+      .routes-grid { grid-template-columns: repeat(2, 1fr); }
+      .province-stats { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .map-hero-content h1 { font-size: var(--fs-3xl); }
+      .map-hero-stats { flex-wrap: wrap; gap: var(--space-6); }
+      .routes-grid { grid-template-columns: 1fr; }
+      .stats-highlights { grid-template-columns: repeat(2, 1fr); }
+      .map-canvas { height: 350px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- 导航栏 -->
+  <div id="navbar-container"></div>
+
+  <main>
+    <!-- Hero区 -->
+    <section class="map-hero">
+      <div class="map-hero-bg"></div>
+      <div class="container">
+        <div class="map-hero-content animate-on-scroll">
+          <div class="eyebrow">RED MAP · 红色地图</div>
+          <h1>追寻<span class="highlight">红色足迹</span><br>感悟初心使命</h1>
+          <p class="desc">遍布神州大地的红色遗址，记录着中国共产党波澜壮阔的奋斗历程。让我们沿着红色地图，重温峥嵘岁月，传承红色基因。</p>
+          <div class="map-hero-stats">
+            <div class="map-hero-stat">
+              <div class="num" id="statSites">16</div>
+              <div class="label">红色遗址</div>
+            </div>
+            <div class="map-hero-stat">
+              <div class="num" id="statProvinces">12</div>
+              <div class="label">覆盖省份</div>
+            </div>
+            <div class="map-hero-stat">
+              <div class="num">4</div>
+              <div class="label">推荐路线</div>
+            </div>
+            <div class="map-hero-stat">
+              <div class="num">5</div>
+              <div class="label">遗址类型</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 地图主区 -->
+    <section class="map-section">
+      <div class="container">
+        <div class="section-header animate-on-scroll">
+          <div class="eyebrow">SITE MAP</div>
+          <h2>红色遗址分布地图</h2>
+          <p>点击地图上的标记或右侧列表，了解每一处红色遗址的详细信息</p>
+          <div class="divider-line"></div>
+        </div>
+
+        <!-- 筛选 -->
+        <div class="filter-section animate-on-scroll">
+          <div class="filter-tags" id="filterTags">
+            <span class="filter-tag active" data-type="all">全部</span>
+            <span class="filter-tag" data-type="会址">会址</span>
+            <span class="filter-tag" data-type="根据地">根据地</span>
+            <span class="filter-tag" data-type="纪念地">纪念地</span>
+            <span class="filter-tag" data-type="故居">故居</span>
+            <span class="filter-tag" data-type="纪念馆">纪念馆</span>
+          </div>
+        </div>
+
+        <div class="map-main animate-on-scroll">
+          <div class="map-container">
+            <div class="map-header">
+              <h3>全国红色遗址分布图</h3>
+              <div class="map-legend">
+                <div class="map-legend-item">
+                  <div class="map-legend-dot high"></div>
+                  <span>重要级</span>
+                </div>
+                <div class="map-legend-item">
+                  <div class="map-legend-dot mid"></div>
+                  <span>重点级</span>
+                </div>
+                <div class="map-legend-item">
+                  <div class="map-legend-dot low"></div>
+                  <span>一般级</span>
+                </div>
+              </div>
+            </div>
+            <div class="map-canvas" id="mapCanvas">
+              <!-- 简化的中国地图轮廓 SVG -->
+              <svg class="china-map-svg" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid meet">
+                <!-- 中国地图简化轮廓 -->
+                <path class="province" d="M200,150 L250,120 L320,110 L400,100 L480,110 L550,130 L600,160 L640,200 L660,260 L650,320 L620,370 L580,400 L520,420 L460,430 L400,440 L340,430 L280,410 L230,380 L190,340 L170,290 L160,240 L170,190 Z
+                  M250,120 L280,80 L340,60 L400,50 L460,60 L500,80 L520,110 L480,110 L400,100 L320,110 L280,115 Z
+                  M600,160 L640,140 L680,160 L700,200 L690,250 L660,260 L640,200 Z
+                  M520,420 L560,440 L580,480 L560,520 L520,540 L480,530 L460,490 L460,430 Z
+                  M190,340 L150,360 L120,400 L130,450 L170,480 L210,470 L230,430 L230,380 Z
+                  M170,190 L130,200 L100,240 L90,290 L110,330 L150,340 L170,290 L160,240 Z"/>
+                <!-- 省份分割线（装饰性） -->
+                <path class="province" d="M280,150 L280,350" stroke="var(--border)" stroke-width="0.5" fill="none" stroke-dasharray="4,4"/>
+                <path class="province" d="M400,120 L400,420" stroke="var(--border)" stroke-width="0.5" fill="none" stroke-dasharray="4,4"/>
+                <path class="province" d="M520,140 L520,400" stroke="var(--border)" stroke-width="0.5" fill="none" stroke-dasharray="4,4"/>
+                <path class="province" d="M200,250 L600,250" stroke="var(--border)" stroke-width="0.5" fill="none" stroke-dasharray="4,4"/>
+                <path class="province" d="M180,350 L580,350" stroke="var(--border)" stroke-width="0.5" fill="none" stroke-dasharray="4,4"/>
+              </svg>
+              <!-- 标记点将由JS动态生成 -->
+              <div id="mapMarkers"></div>
+            </div>
+          </div>
+
+          <div class="site-list">
+            <div class="site-list-header">
+              <span>遗址列表</span>
+              <span class="count" id="siteCount">16 处</span>
+            </div>
+            <div class="site-list-items" id="siteListItems">
+              <!-- 列表项由JS生成 -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 红色旅游路线推荐 -->
+    <section class="routes-section">
+      <div class="container">
+        <div class="section-header animate-on-scroll">
+          <div class="eyebrow">RED TOURISM ROUTES</div>
+          <h2>经典红色旅游路线</h2>
+          <p>精选多条红色旅游精品线路，带您重走革命之路，感悟初心使命</p>
+          <div class="divider-line"></div>
+        </div>
+        <div class="routes-grid animate-on-scroll">
+          <div class="route-card">
+            <div class="route-header">
+              <div class="route-badge">经典路线</div>
+              <h3>建党初心之旅</h3>
+              <div class="route-info">
+                <span>📍 上海→嘉兴</span>
+                <span>⏱ 2天1夜</span>
+              </div>
+            </div>
+            <div class="route-body">
+              <div class="route-stops">
+                <h5>途经站点</h5>
+                <div class="route-stop-list">
+                  <span class="route-stop">中共一大会址</span>
+                  <span class="route-stop">中共二大会址</span>
+                  <span class="route-stop">南湖红船</span>
+                  <span class="route-stop">南湖革命纪念馆</span>
+                </div>
+              </div>
+              <div class="route-reason">
+                从兴业路到南湖畔，追寻中国共产党的诞生足迹，感悟开天辟地、敢为人先的红船精神，重温共产党人的初心与使命。
+              </div>
+            </div>
+          </div>
+
+          <div class="route-card">
+            <div class="route-header" style="background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);">
+              <div class="route-badge">热门路线</div>
+              <h3>长征精神之旅</h3>
+              <div class="route-info">
+                <span>📍 江西→贵州→陕西</span>
+                <span>⏱ 7天6夜</span>
+              </div>
+            </div>
+            <div class="route-body">
+              <div class="route-stops">
+                <h5>途经站点</h5>
+                <div class="route-stop-list">
+                  <span class="route-stop">瑞金中央苏区</span>
+                  <span class="route-stop">遵义会议会址</span>
+                  <span class="route-stop">泸定桥</span>
+                  <span class="route-stop">延安革命圣地</span>
+                </div>
+              </div>
+              <div class="route-reason">
+                沿着红军长征的足迹，从瑞金出发，经遵义会议、飞夺泸定桥，最终到达延安，亲身体验长征的艰难与伟大，传承长征精神。
+              </div>
+            </div>
+          </div>
+
+          <div class="route-card">
+            <div class="route-header" style="background: linear-gradient(135deg, #1565C0 0%, #0D47A1 100%);">
+              <div class="route-badge">推荐路线</div>
+              <h3>革命圣地延安行</h3>
+              <div class="route-info">
+                <span>📍 陕西延安</span>
+                <span>⏱ 3天2夜</span>
+              </div>
+            </div>
+            <div class="route-body">
+              <div class="route-stops">
+                <h5>途经站点</h5>
+                <div class="route-stop-list">
+                  <span class="route-stop">延安革命纪念馆</span>
+                  <span class="route-stop">枣园革命旧址</span>
+                  <span class="route-stop">杨家岭</span>
+                  <span class="route-stop">南泥湾</span>
+                </div>
+              </div>
+              <div class="route-reason">
+                走进延安这座革命圣地，参观窑洞旧址，聆听延安故事，感悟自力更生、艰苦奋斗的延安精神，接受深刻的革命传统教育。
+              </div>
+            </div>
+          </div>
+
+          <div class="route-card">
+            <div class="route-header" style="background: linear-gradient(135deg, #880E4F 0%, #500028 100%);">
+              <div class="route-badge">英雄路线</div>
+              <h3>英烈缅怀之旅</h3>
+              <div class="route-info">
+                <span>📍 北京→河北→辽宁</span>
+                <span>⏱ 5天4夜</span>
+              </div>
+            </div>
+            <div class="route-body">
+              <div class="route-stops">
+                <h5>途经站点</h5>
+                <div class="route-stop-list">
+                  <span class="route-stop">天安门广场</span>
+                  <span class="route-stop">狼牙山</span>
+                  <span class="route-stop">西柏坡纪念馆</span>
+                  <span class="route-stop">雷锋纪念馆</span>
+                </div>
+              </div>
+              <div class="route-reason">
+                缅怀革命英烈的丰功伟绩，从天安门广场到狼牙山，从西柏坡到抚顺，感受英雄们的崇高精神和家国情怀。
+              </div>
+            </div>
+          </div>
+
+          <div class="route-card">
+            <div class="route-header" style="background: linear-gradient(135deg, #E65100 0%, #BF360C 100%);">
+              <div class="route-badge">特色路线</div>
+              <h3>井冈星火之旅</h3>
+              <div class="route-info">
+                <span>📍 江西井冈山</span>
+                <span>⏱ 3天2夜</span>
+              </div>
+            </div>
+            <div class="route-body">
+              <div class="route-stops">
+                <h5>途经站点</h5>
+                <div class="route-stop-list">
+                  <span class="route-stop">井冈山革命根据地</span>
+                  <span class="route-stop">黄洋界</span>
+                  <span class="route-stop">茨坪革命旧址</span>
+                  <span class="route-stop">井冈山烈士陵园</span>
+                </div>
+              </div>
+              <div class="route-reason">
+                登上中国革命的摇篮——井冈山，探访革命旧址，缅怀革命先烈，深刻领会"坚定信念、艰苦奋斗"的井冈山精神。
+              </div>
+            </div>
+          </div>
+
+          <div class="route-card">
+            <div class="route-header" style="background: linear-gradient(135deg, #37474F 0%, #263238 100%);">
+              <div class="route-badge">时代路线</div>
+              <h3>新时代成就之旅</h3>
+              <div class="route-info">
+                <span>📍 深圳→上海→北京</span>
+                <span>⏱ 6天5夜</span>
+              </div>
+            </div>
+            <div class="route-body">
+              <div class="route-stops">
+                <h5>途经站点</h5>
+                <div class="route-stop-list">
+                  <span class="route-stop">深圳特区</span>
+                  <span class="route-stop">上海一大会址</span>
+                  <span class="route-stop">嘉兴南湖</span>
+                  <span class="route-stop">北京天安门</span>
+                </div>
+              </div>
+              <div class="route-reason">
+                从改革开放前沿深圳到党的诞生地上海，再到首都北京，感受中国共产党带领人民从站起来、富起来到强起来的伟大飞跃。
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 省级分布统计 -->
+    <section class="stats-section">
+      <div class="container">
+        <div class="section-header animate-on-scroll">
+          <div class="eyebrow">PROVINCIAL STATISTICS</div>
+          <h2>省级红色遗址分布</h2>
+          <p>全国各省红色遗址数量统计，红色文化资源遍布神州大地</p>
+          <div class="divider-line"></div>
+        </div>
+        <div class="province-stats animate-on-scroll">
+          <div class="stats-chart">
+            <h3>各省遗址数量排行</h3>
+            <div class="bar-chart" id="barChart">
+              <div class="bar-item">
+                <div class="bar-label">江西</div>
+                <div class="bar-track">
+                  <div class="bar-fill" style="width: 100%;"><span class="bar-value">3</span></div>
+                </div>
+              </div>
+              <div class="bar-item">
+                <div class="bar-label">浙江</div>
+                <div class="bar-track">
+                  <div class="bar-fill gold" style="width: 67%;"><span class="bar-value">2</span></div>
+                </div>
+              </div>
+              <div class="bar-item">
+                <div class="bar-label">河北</div>
+                <div class="bar-track">
+                  <div class="bar-fill gold" style="width: 67%;"><span class="bar-value">2</span></div>
+                </div>
+              </div>
+              <div class="bar-item">
+                <div class="bar-label">贵州</div>
+                <div class="bar-track">
+                  <div class="bar-fill" style="width: 33%;"><span class="bar-value">1</span></div>
+                </div>
+              </div>
+              <div class="bar-item">
+                <div class="bar-label">陕西</div>
+                <div class="bar-track">
+                  <div class="bar-fill" style="width: 33%;"><span class="bar-value">1</span></div>
+                </div>
+              </div>
+              <div class="bar-item">
+                <div class="bar-label">北京</div>
+                <div class="bar-track">
+                  <div class="bar-fill" style="width: 33%;"><span class="bar-value">1</span></div>
+                </div>
+              </div>
+              <div class="bar-item">
+                <div class="bar-label">湖南</div>
+                <div class="bar-track">
+                  <div class="bar-fill" style="width: 33%;"><span class="bar-value">1</span></div>
+                </div>
+              </div>
+              <div class="bar-item">
+                <div class="bar-label">辽宁</div>
+                <div class="bar-track">
+                  <div class="bar-fill" style="width: 33%;"><span class="bar-value">1</span></div>
+                </div>
+              </div>
+              <div class="bar-item">
+                <div class="bar-label">福建</div>
+                <div class="bar-track">
+                  <div class="bar-fill" style="width: 33%;"><span class="bar-value">1</span></div>
+                </div>
+              </div>
+              <div class="bar-item">
+                <div class="bar-label">河南</div>
+                <div class="bar-track">
+                  <div class="bar-fill" style="width: 33%;"><span class="bar-value">1</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="stats-highlights">
+            <div class="stat-highlight-card">
+              <div class="icon">🏛️</div>
+              <div class="num">16</div>
+              <div class="label">重点红色遗址</div>
+            </div>
+            <div class="stat-highlight-card">
+              <div class="icon">🗺️</div>
+              <div class="num">12</div>
+              <div class="label">覆盖省份</div>
+            </div>
+            <div class="stat-highlight-card">
+              <div class="icon">📜</div>
+              <div class="num">5</div>
+              <div class="label">遗址类型</div>
+            </div>
+            <div class="stat-highlight-card">
+              <div class="icon">🛤️</div>
+              <div class="num">6</div>
+              <div class="label">推荐旅游路线</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 底部 -->
+  <div id="footer-container"></div>
+
+  <script src="mock.js"></script>
+  <script src="app.js"></script>
+  <script>
+    // 渲染导航和底部
+    document.getElementById('navbar-container').innerHTML = MuseumUtils.getNavHTML('map');
+    document.getElementById('footer-container').innerHTML = MuseumUtils.getFooterHTML();
+
+    // 红色遗址地图坐标（百分比位置，对应800x600 viewBox）
+    const siteCoords = {
+      '中共一大会址': { x: 78, y: 48 },
+      '南湖红船': { x: 76, y: 52 },
+      '井冈山革命根据地': { x: 62, y: 62 },
+      '瑞金中央苏区': { x: 58, y: 65 },
+      '遵义会议会址': { x: 42, y: 58 },
+      '延安革命圣地': { x: 42, y: 32 },
+      '西柏坡纪念馆': { x: 52, y: 26 },
+      '天安门广场': { x: 58, y: 22 },
+      '韶山冲': { x: 56, y: 65 },
+      '南湖革命纪念馆': { x: 76, y: 53 },
+      '狼牙山': { x: 54, y: 25 },
+      '焦裕禄纪念馆': { x: 50, y: 42 },
+      '雷锋纪念馆': { x: 78, y: 18 },
+      '古田会议会址': { x: 65, y: 70 },
+      '百色起义纪念馆': { x: 48, y: 75 },
+      '西路军纪念馆': { x: 22, y: 28 }
+    };
+
+    let currentFilter = 'all';
+
+    // 渲染地图标记
+    function renderMapMarkers(sites) {
+      const container = document.getElementById('mapMarkers');
+      container.innerHTML = sites.map((site, idx) => {
+        const coord = siteCoords[site.name] || { x: 50, y: 50 };
+        return `
+          <div class="map-marker importance-${site.importance}" 
+               style="left: ${coord.x}%; top: ${coord.y}%;"
+               data-name="${site.name}"
+               data-index="${idx}">
+            <div class="map-marker-dot"></div>
+            <div class="map-marker-tooltip">
+              <div class="name">${site.name}</div>
+              <div class="loc">${site.location} · ${site.year}年</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // 绑定点击事件
+      container.querySelectorAll('.map-marker').forEach(marker => {
+        marker.addEventListener('click', function() {
+          const name = this.dataset.name;
+          highlightSite(name);
+        });
+      });
+    }
+
+    // 渲染遗址列表
+    function renderSiteList(sites) {
+      const container = document.getElementById('siteListItems');
+      document.getElementById('siteCount').textContent = sites.length + ' 处';
+      
+      container.innerHTML = sites.map((site, idx) => `
+        <div class="site-list-item" data-name="${site.name}" data-index="${idx}">
+          <div class="name">${site.name}</div>
+          <div class="meta">
+            <span class="year">${site.year}年</span>
+            <span>${site.location}</span>
+            <span>${site.type}</span>
+          </div>
+        </div>
+      `).join('');
+
+      // 绑定点击事件
+      container.querySelectorAll('.site-list-item').forEach(item => {
+        item.addEventListener('click', function() {
+          const name = this.dataset.name;
+          highlightSite(name);
+        });
+      });
+    }
+
+    // 高亮选中的遗址
+    function highlightSite(name) {
+      // 列表高亮
+      document.querySelectorAll('.site-list-item').forEach(item => {
+        item.classList.toggle('active', item.dataset.name === name);
+      });
+
+      // 地图标记高亮 - 滚动到列表
+      const listItem = document.querySelector(`.site-list-item[data-name="${name}"]`);
+      if (listItem) {
+        listItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      // 地图标记动画
+      const marker = document.querySelector(`.map-marker[data-name="${name}"]`);
+      if (marker) {
+        const dot = marker.querySelector('.map-marker-dot');
+        dot.style.animation = 'none';
+        dot.offsetHeight; // trigger reflow
+        dot.style.animation = 'pulse 0.6s ease 2';
+      }
+    }
+
+    // 筛选功能
+    function filterSites(type) {
+      currentFilter = type;
+      const sites = window.MOCK.redSites;
+      const filtered = type === 'all' ? sites : sites.filter(s => s.type === type);
+      
+      renderMapMarkers(filtered);
+      renderSiteList(filtered);
+
+      // 更新筛选标签状态
+      document.querySelectorAll('.filter-tag').forEach(tag => {
+        tag.classList.toggle('active', tag.dataset.type === type);
+      });
+    }
+
+    // 初始化
+    document.querySelectorAll('.filter-tag').forEach(tag => {
+      tag.addEventListener('click', function() {
+        filterSites(this.dataset.type);
+      });
+    });
+
+    // 初始渲染
+    filterSites('all');
+
+    // 数字动画
+    window.addEventListener('load', function() {
+      setTimeout(() => {
+        const statSites = document.getElementById('statSites');
+        const statProvinces = document.getElementById('statProvinces');
+        if (statSites) MuseumUtils.animateNumber(statSites, 16, 1500);
+        if (statProvinces) MuseumUtils.animateNumber(statProvinces, 12, 1500);
+      }, 500);
+    });
+  </script>
+</body>
+</html>

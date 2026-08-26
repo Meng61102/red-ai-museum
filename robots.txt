@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /assets/
+
+# 站点地图
+Sitemap: https://your-domain.com/sitemap.xml

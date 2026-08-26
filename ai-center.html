@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI互动中心 - 红色电子AI博物馆</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ========== AI Center Page Styles ========== */
+
+    /* Tech Hero */
+    .ai-hero {
+      position: relative;
+      min-height: 620px;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      background: linear-gradient(135deg, #0D0505 0%, #1A0A0A 30%, #2C1810 60%, #1A2332 100%);
+    }
+    .ai-hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        radial-gradient(ellipse at 15% 40%, rgba(196, 30, 58, 0.35) 0%, transparent 45%),
+        radial-gradient(ellipse at 85% 60%, rgba(212, 175, 55, 0.2) 0%, transparent 40%),
+        radial-gradient(ellipse at 50% 100%, rgba(196, 30, 58, 0.2) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .ai-hero::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image:
+        linear-gradient(rgba(196, 30, 58, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(196, 30, 58, 0.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+      mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+      -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+      pointer-events: none;
+    }
+    .ai-hero-content {
+      position: relative;
+      z-index: 2;
+      padding: var(--space-20) 0;
+      color: #fff;
+      text-align: center;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .ai-hero-content .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-5);
+      background: rgba(196, 30, 58, 0.15);
+      border: 1px solid rgba(196, 30, 58, 0.4);
+      border-radius: var(--radius-full);
+      font-size: var(--fs-sm);
+      color: var(--gold-300);
+      margin-bottom: var(--space-6);
+      backdrop-filter: blur(8px);
+      font-weight: 500;
+      letter-spacing: 0.08em;
+    }
+    .ai-hero-content h1 {
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      color: #fff;
+      margin-bottom: var(--space-5);
+      line-height: 1.15;
+      font-weight: 800;
+    }
+    .ai-hero-content h1 .highlight-red {
+      background: linear-gradient(135deg, #FF6B6B, #C41E3A);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .ai-hero-content h1 .highlight-gold {
+      background: linear-gradient(135deg, #FFE066, #D4AF37);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .ai-hero-content .desc {
+      font-size: var(--fs-lg);
+      color: rgba(255, 255, 255, 0.75);
+      max-width: 640px;
+      margin: 0 auto var(--space-10);
+      line-height: 1.8;
+    }
+    .ai-hero-actions {
+      display: flex;
+      gap: var(--space-4);
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* Floating particles */
+    .particles {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: var(--gold-400);
+      border-radius: 50%;
+      opacity: 0.6;
+      animation: float-up 6s infinite ease-in-out;
+    }
+    @keyframes float-up {
+      0% { transform: translateY(100vh) scale(0); opacity: 0; }
+      10% { opacity: 0.6; }
+      90% { opacity: 0.6; }
+      100% { transform: translateY(-100px) scale(1); opacity: 0; }
+    }
+
+    /* AI Features Grid */
+    .ai-features {
+      padding: var(--space-20) 0;
+    }
+    .ai-features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-6);
+    }
+    .ai-feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-8);
+      transition: all var(--duration-base) var(--ease-standard);
+      position: relative;
+      overflow: hidden;
+    }
+    .ai-feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--red-500), var(--gold-400));
+      opacity: 0;
+      transition: opacity var(--duration-base);
+    }
+    .ai-feature-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-xl);
+      border-color: var(--red-200);
+    }
+    .ai-feature-card:hover::before {
+      opacity: 1;
+    }
+    .ai-feature-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: var(--space-5);
+      font-size: 28px;
+    }
+    .ai-feature-card.red .ai-feature-icon { background: linear-gradient(135deg, #FFE0E0, #FFB3B3); color: var(--red-600); }
+    .ai-feature-card.gold .ai-feature-icon { background: linear-gradient(135deg, #FFF9E0, #FFEFAA); color: var(--gold-600); }
+    .ai-feature-card.blue .ai-feature-icon { background: linear-gradient(135deg, #E3F2FD, #90CAF9); color: #1565C0; }
+    .ai-feature-card.green .ai-feature-icon { background: linear-gradient(135deg, #E8F5E9, #A5D6A7); color: #2E7D32; }
+    .ai-feature-card.purple .ai-feature-icon { background: linear-gradient(135deg, #F3E5F5, #CE93D8); color: #7B1FA2; }
+    .ai-feature-card.orange .ai-feature-icon { background: linear-gradient(135deg, #FFF3E0, #FFCC80); color: #E65100; }
+    .ai-feature-card h3 {
+      font-size: var(--fs-xl);
+      margin-bottom: var(--space-3);
+      color: var(--text);
+    }
+    .ai-feature-card p {
+      color: var(--text-muted);
+      font-size: var(--fs-sm);
+      line-height: 1.7;
+      margin-bottom: var(--space-4);
+    }
+    .ai-feature-card .feature-link {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--fs-sm);
+      font-weight: 600;
+      color: var(--color-primary);
+      text-decoration: none;
+      transition: gap var(--duration-fast);
+    }
+    .ai-feature-card .feature-link:hover {
+      gap: var(--space-3);
+    }
+
+    /* Chat Demo Section */
+    .chat-section {
+      padding: var(--space-20) 0;
+      background: linear-gradient(180deg, var(--bg) 0%, #F5EDE8 100%);
+    }
+    .chat-demo {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: var(--space-6);
+      background: var(--surface);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-lg);
+      min-height: 560px;
+    }
+    .chat-sidebar {
+      background: linear-gradient(180deg, var(--red-700) 0%, var(--red-900) 100%);
+      padding: var(--space-6);
+      color: #fff;
+    }
+    .chat-sidebar h4 {
+      color: #fff;
+      font-size: var(--fs-base);
+      margin-bottom: var(--space-4);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .chat-sidebar h4::before {
+      content: '';
+      width: 4px;
+      height: 18px;
+      background: var(--gold-400);
+      border-radius: 2px;
+    }
+    .preset-questions {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+    .preset-question {
+      padding: var(--space-3) var(--space-4);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-md);
+      font-size: var(--fs-sm);
+      color: rgba(255, 255, 255, 0.85);
+      cursor: pointer;
+      transition: all var(--duration-fast);
+      text-align: left;
+      line-height: 1.5;
+    }
+    .preset-question:hover {
+      background: rgba(212, 175, 55, 0.2);
+      border-color: var(--gold-400);
+      color: #fff;
+      transform: translateX(4px);
+    }
+    .chat-main {
+      display: flex;
+      flex-direction: column;
+      min-height: 560px;
+    }
+    .chat-header {
+      padding: var(--space-4) var(--space-6);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+    .chat-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--red-500), var(--red-700));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold-300);
+      font-weight: 700;
+      font-size: var(--fs-lg);
+    }
+    .chat-header-info .name {
+      font-weight: 600;
+      font-size: var(--fs-base);
+      color: var(--text);
+    }
+    .chat-header-info .status {
+      font-size: var(--fs-xs);
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+    }
+    .chat-header-info .status::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: #4CAF50;
+      border-radius: 50%;
+    }
+    .chat-messages {
+      flex: 1;
+      padding: var(--space-6);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+      background: var(--surface-2);
+    }
+    .chat-msg {
+      display: flex;
+      gap: var(--space-3);
+      max-width: 85%;
+      animation: msg-in 0.3s var(--ease-decelerate);
+    }
+    @keyframes msg-in {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .chat-msg.user {
+      align-self: flex-end;
+      flex-direction: row-reverse;
+    }
+    .chat-msg-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+    .chat-msg.bot .chat-msg-avatar {
+      background: linear-gradient(135deg, var(--red-500), var(--red-700));
+      color: var(--gold-300);
+    }
+    .chat-msg.user .chat-msg-avatar {
+      background: var(--gray-200);
+      color: var(--gray-600);
+    }
+    .chat-msg-bubble {
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--radius-lg);
+      font-size: var(--fs-sm);
+      line-height: 1.7;
+    }
+    .chat-msg.bot .chat-msg-bubble {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-top-left-radius: 4px;
+    }
+    .chat-msg.user .chat-msg-bubble {
+      background: linear-gradient(135deg, var(--red-500), var(--red-600));
+      color: #fff;
+      border-top-right-radius: 4px;
+    }
+    .chat-input-area {
+      padding: var(--space-4) var(--space-6);
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: var(--space-3);
+      align-items: center;
+    }
+    .chat-input {
+      flex: 1;
+      padding: var(--space-3) var(--space-4);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      font-size: var(--fs-sm);
+      outline: none;
+      transition: border-color var(--duration-fast);
+      font-family: inherit;
+    }
+    .chat-input:focus {
+      border-color: var(--color-primary);
+    }
+    .chat-send-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--red-500), var(--red-600));
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--duration-fast);
+    }
+    .chat-send-btn:hover {
+      transform: scale(1.05);
+      box-shadow: var(--shadow-red);
+    }
+
+    /* Photo Restore Section */
+    .restore-section {
+      padding: var(--space-20) 0;
+    }
+    .restore-demo {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: var(--space-8);
+      align-items: center;
+      margin-bottom: var(--space-10);
+    }
+    .restore-panel {
+      text-align: center;
+    }
+    .restore-panel h4 {
+      font-size: var(--fs-lg);
+      margin-bottom: var(--space-4);
+      color: var(--text);
+    }
+    .restore-img-box {
+      aspect-ratio: 4/3;
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      position: relative;
+      box-shadow: var(--shadow-lg);
+      background: #2A1818;
+    }
+    .restore-img-box .img-placeholder {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #4A3728 0%, #2A1818 50%, #3D2817 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255, 255, 255, 0.4);
+      font-size: var(--fs-2xl);
+      font-weight: 700;
+      position: relative;
+    }
+    .restore-img-box .img-placeholder::before {
+      content: '';
+      position: absolute;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: rgba(212, 175, 55, 0.1);
+    }
+    .restore-img-box .img-placeholder::after {
+      content: '';
+      position: absolute;
+      bottom: 15%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 60px;
+      border-radius: 60px 60px 0 0;
+      background: rgba(196, 30, 58, 0.15);
+    }
+    .restore-old .restore-img-box {
+      filter: sepia(0.8) blur(1px) contrast(0.8) brightness(0.7);
+    }
+    .restore-old .restore-img-box::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        linear-gradient(45deg, transparent 48%, rgba(0,0,0,0.3) 49%, rgba(0,0,0,0.3) 51%, transparent 52%),
+        linear-gradient(-45deg, transparent 48%, rgba(0,0,0,0.2) 49%, rgba(0,0,0,0.2) 51%, transparent 52%);
+      background-size: 200px 200px, 150px 150px;
+      pointer-events: none;
+    }
+    .restore-new .restore-img-box {
+      filter: none;
+    }
+    .restore-arrow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-4);
+    }
+    .restore-arrow-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold-300), var(--gold-500));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gray-800);
+      font-weight: 700;
+      font-size: 24px;
+      box-shadow: 0 4px 16px rgba(212, 175, 55, 0.4);
+      animation: pulse-glow 2s infinite;
+    }
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 4px 16px rgba(212, 175, 55, 0.4); }
+      50% { box-shadow: 0 4px 24px rgba(212, 175, 55, 0.6); }
+    }
+    .restore-upload {
+      background: var(--surface);
+      border: 2px dashed var(--border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-10);
+      text-align: center;
+      transition: all var(--duration-base);
+    }
+    .restore-upload:hover {
+      border-color: var(--color-primary);
+      background: var(--red-50);
+    }
+    .restore-upload-icon {
+      font-size: 48px;
+      margin-bottom: var(--space-4);
+    }
+    .restore-upload h4 {
+      font-size: var(--fs-lg);
+      margin-bottom: var(--space-2);
+    }
+    .restore-upload p {
+      color: var(--text-muted);
+      font-size: var(--fs-sm);
+      margin-bottom: var(--space-5);
+    }
+
+    /* Scene Recreation Section */
+    .scene-section {
+      padding: var(--space-20) 0;
+      background: linear-gradient(180deg, #F5EDE8 0%, var(--bg) 100%);
+    }
+    .scene-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-5);
+      margin-bottom: var(--space-10);
+    }
+    .scene-card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      transition: all var(--duration-base);
+    }
+    .scene-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+    .scene-img {
+      aspect-ratio: 1;
+      position: relative;
+      overflow: hidden;
+    }
+    .scene-img .gradient-1 { background: linear-gradient(135deg, #8B0000 0%, #4A0000 50%, #D4AF37 100%); width: 100%; height: 100%; }
+    .scene-img .gradient-2 { background: linear-gradient(135deg, #1A237E 0%, #0D47A1 50%, #C41E3A 100%); width: 100%; height: 100%; }
+    .scene-img .gradient-3 { background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 50%, #FFD700 100%); width: 100%; height: 100%; }
+    .scene-img .gradient-4 { background: linear-gradient(135deg, #37474F 0%, #263238 50%, #FF6B35 100%); width: 100%; height: 100%; }
+    .scene-img .scene-label {
+      position: absolute;
+      bottom: var(--space-3);
+      left: var(--space-3);
+      right: var(--space-3);
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+      color: #fff;
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-sm);
+      font-size: var(--fs-xs);
+      text-align: center;
+    }
+    .scene-card-body {
+      padding: var(--space-4);
+    }
+    .scene-card-body h4 {
+      font-size: var(--fs-base);
+      margin-bottom: var(--space-2);
+    }
+    .scene-card-body p {
+      font-size: var(--fs-xs);
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    .scene-generator {
+      background: var(--surface);
+      border-radius: var(--radius-xl);
+      padding: var(--space-8);
+      display: flex;
+      gap: var(--space-4);
+      align-items: center;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border);
+    }
+    .scene-generator-input {
+      flex: 1;
+      padding: var(--space-4) var(--space-5);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      font-size: var(--fs-base);
+      outline: none;
+      font-family: inherit;
+      transition: border-color var(--duration-fast);
+    }
+    .scene-generator-input:focus {
+      border-color: var(--color-primary);
+    }
+
+    /* Voice Guide Section */
+    .voice-section {
+      padding: var(--space-20) 0;
+    }
+    .voice-demo {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: var(--space-8);
+      align-items: center;
+    }
+    .voice-digital-human {
+      aspect-ratio: 3/4;
+      border-radius: var(--radius-xl);
+      background: linear-gradient(180deg, var(--red-800) 0%, var(--red-900) 50%, var(--gray-900) 100%);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding-bottom: var(--space-8);
+    }
+    .voice-digital-human::before {
+      content: '';
+      position: absolute;
+      top: 15%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.3), rgba(196, 30, 58, 0.2));
+      box-shadow: 0 0 60px rgba(212, 175, 55, 0.2);
+    }
+    .voice-digital-human .human-figure {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      color: rgba(255, 255, 255, 0.9);
+    }
+    .voice-digital-human .human-name {
+      font-size: var(--fs-lg);
+      font-weight: 600;
+      margin-bottom: var(--space-1);
+      color: var(--gold-300);
+    }
+    .voice-digital-human .human-title {
+      font-size: var(--fs-xs);
+      color: rgba(255, 255, 255, 0.5);
+    }
+    .voice-waves {
+      position: absolute;
+      bottom: 25%;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 3px;
+      align-items: center;
+      height: 40px;
+    }
+    .voice-wave {
+      width: 3px;
+      background: linear-gradient(180deg, var(--gold-300), var(--red-400));
+      border-radius: 2px;
+      animation: wave 1.2s ease-in-out infinite;
+    }
+    .voice-wave:nth-child(1) { height: 20px; animation-delay: 0s; }
+    .voice-wave:nth-child(2) { height: 35px; animation-delay: 0.1s; }
+    .voice-wave:nth-child(3) { height: 25px; animation-delay: 0.2s; }
+    .voice-wave:nth-child(4) { height: 40px; animation-delay: 0.3s; }
+    .voice-wave:nth-child(5) { height: 30px; animation-delay: 0.4s; }
+    .voice-wave:nth-child(6) { height: 35px; animation-delay: 0.5s; }
+    .voice-wave:nth-child(7) { height: 20px; animation-delay: 0.6s; }
+    @keyframes wave {
+      0%, 100% { transform: scaleY(0.5); }
+      50% { transform: scaleY(1); }
+    }
+    .voice-player {
+      background: var(--surface);
+      border-radius: var(--radius-xl);
+      padding: var(--space-8);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-md);
+    }
+    .voice-player-title {
+      font-size: var(--fs-2xl);
+      font-weight: 700;
+      margin-bottom: var(--space-2);
+      color: var(--text);
+    }
+    .voice-player-subtitle {
+      color: var(--text-muted);
+      font-size: var(--fs-sm);
+      margin-bottom: var(--space-6);
+    }
+    .voice-progress {
+      margin-bottom: var(--space-5);
+    }
+    .voice-progress-bar {
+      height: 6px;
+      background: var(--gray-200);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: var(--space-2);
+      cursor: pointer;
+    }
+    .voice-progress-fill {
+      height: 100%;
+      width: 35%;
+      background: linear-gradient(90deg, var(--red-500), var(--gold-400));
+      border-radius: 3px;
+      position: relative;
+    }
+    .voice-progress-fill::after {
+      content: '';
+      position: absolute;
+      right: -6px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--red-500);
+      box-shadow: 0 2px 6px rgba(196, 30, 58, 0.4);
+    }
+    .voice-progress-time {
+      display: flex;
+      justify-content: space-between;
+      font-size: var(--fs-xs);
+      color: var(--text-muted);
+    }
+    .voice-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-5);
+      margin-bottom: var(--space-6);
+    }
+    .voice-ctrl-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      transition: all var(--duration-fast);
+    }
+    .voice-ctrl-btn:hover {
+      background: var(--gray-100);
+      color: var(--color-primary);
+    }
+    .voice-play-btn {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--red-500), var(--red-600));
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-red);
+      transition: all var(--duration-fast);
+    }
+    .voice-play-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(196, 30, 58, 0.3);
+    }
+    .voice-playlist {
+      border-top: 1px solid var(--border);
+      padding-top: var(--space-5);
+    }
+    .voice-playlist h5 {
+      font-size: var(--fs-sm);
+      color: var(--text-secondary);
+      margin-bottom: var(--space-3);
+    }
+    .voice-playlist-items {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+    .voice-playlist-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: background var(--duration-fast);
+      font-size: var(--fs-sm);
+    }
+    .voice-playlist-item:hover {
+      background: var(--gray-50);
+    }
+    .voice-playlist-item.active {
+      background: var(--red-50);
+      color: var(--red-600);
+    }
+    .voice-playlist-item .idx {
+      width: 20px;
+      text-align: center;
+      font-weight: 600;
+      font-size: var(--fs-xs);
+      color: var(--text-muted);
+    }
+    .voice-playlist-item.active .idx {
+      color: var(--red-500);
+    }
+    .voice-playlist-item .title {
+      flex: 1;
+    }
+    .voice-playlist-item .duration {
+      font-size: var(--fs-xs);
+      color: var(--text-muted);
+    }
+
+    /* Timeline Generator Section */
+    .timeline-section {
+      padding: var(--space-20) 0;
+      background: linear-gradient(180deg, var(--bg) 0%, #F5EDE8 100%);
+    }
+    .timeline-generator {
+      max-width: 720px;
+      margin: 0 auto var(--space-12);
+      text-align: center;
+    }
+    .timeline-generator-input-wrap {
+      display: flex;
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+    .timeline-generator-input {
+      flex: 1;
+      padding: var(--space-4) var(--space-5);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      font-size: var(--fs-base);
+      outline: none;
+      font-family: inherit;
+      transition: border-color var(--duration-fast);
+    }
+    .timeline-generator-input:focus {
+      border-color: var(--color-primary);
+    }
+    .timeline-tags {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+    .timeline-tag {
+      padding: var(--space-1) var(--space-3);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      font-size: var(--fs-xs);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all var(--duration-fast);
+    }
+    .timeline-tag:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+    .timeline-result {
+      position: relative;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: var(--space-8) 0;
+    }
+    .timeline-result::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(180deg, var(--red-500), var(--gold-400), var(--red-500));
+      transform: translateX(-50%);
+    }
+    .timeline-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: var(--space-8);
+      position: relative;
+    }
+    .timeline-item:nth-child(odd) {
+      flex-direction: row;
+    }
+    .timeline-item:nth-child(even) {
+      flex-direction: row-reverse;
+    }
+    .timeline-item-content {
+      width: calc(50% - 30px);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      box-shadow: var(--shadow-sm);
+      transition: all var(--duration-base);
+    }
+    .timeline-item-content:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    .timeline-item-dot {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--red-500);
+      border: 3px solid var(--bg);
+      box-shadow: 0 0 0 2px var(--red-500);
+      z-index: 1;
+    }
+    .timeline-item-year {
+      font-size: var(--fs-2xl);
+      font-weight: 700;
+      color: var(--red-500);
+      font-family: var(--font-display);
+      margin-bottom: var(--space-1);
+    }
+    .timeline-item-title {
+      font-size: var(--fs-lg);
+      font-weight: 600;
+      margin-bottom: var(--space-2);
+      color: var(--text);
+    }
+    .timeline-item-desc {
+      font-size: var(--fs-sm);
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .ai-features-grid { grid-template-columns: repeat(2, 1fr); }
+      .scene-grid { grid-template-columns: repeat(2, 1fr); }
+      .restore-demo { grid-template-columns: 1fr; gap: var(--space-6); }
+      .restore-arrow { flex-direction: row; }
+      .voice-demo { grid-template-columns: 1fr; }
+      .voice-digital-human { aspect-ratio: 16/9; max-width: 400px; margin: 0 auto; width: 100%; }
+    }
+    @media (max-width: 768px) {
+      .chat-demo { grid-template-columns: 1fr; }
+      .chat-sidebar { order: 2; }
+      .chat-main { order: 1; min-height: 400px; }
+      .ai-features-grid { grid-template-columns: 1fr; }
+      .scene-grid { grid-template-columns: repeat(2, 1fr); }
+      .scene-generator { flex-direction: column; }
+      .timeline-result::before { left: 20px; }
+      .timeline-item, .timeline-item:nth-child(even) { flex-direction: row; padding-left: 50px; }
+      .timeline-item-content { width: 100%; }
+      .timeline-item-dot { left: 20px; transform: translateY(-50%); }
+    }
+  </style>
+</head>
+<body>
+  <!-- 导航栏 -->
+  <div id="navbar-container"></div>
+
+  <main>
+    <!-- Hero区 -->
+    <section class="ai-hero">
+      <div class="particles">
+        <div class="particle" style="left: 10%; animation-delay: 0s; animation-duration: 8s;"></div>
+        <div class="particle" style="left: 25%; animation-delay: 2s; animation-duration: 6s;"></div>
+        <div class="particle" style="left: 45%; animation-delay: 1s; animation-duration: 7s;"></div>
+        <div class="particle" style="left: 65%; animation-delay: 3s; animation-duration: 5s;"></div>
+        <div class="particle" style="left: 80%; animation-delay: 0.5s; animation-duration: 9s;"></div>
+        <div class="particle" style="left: 90%; animation-delay: 2.5s; animation-duration: 7s;"></div>
+      </div>
+      <div class="container">
+        <div class="ai-hero-content animate-on-scroll">
+          <div class="eyebrow">AI POWERED EXPERIENCE</div>
+          <h1>
+            <span class="highlight-red">AI</span> × <span class="highlight-gold">红色文化</span>
+          </h1>
+          <p class="desc">用人工智能解锁历史的无限可能，让红色记忆在数字时代焕发新生。智能问答、老照片修复、场景还原、语音讲解……开启沉浸式红色文化新体验。</p>
+          <div class="ai-hero-actions">
+            <a href="#chat-demo" class="btn btn-gold btn-lg">开始AI对话</a>
+            <a href="#features" class="btn btn-secondary btn-lg" style="color: #fff; border-color: rgba(255,255,255,0.3);">探索全部功能</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- AI功能总览 -->
+    <section class="ai-features" id="features">
+      <div class="container">
+        <div class="section-header animate-on-scroll">
+          <div class="eyebrow">AI CAPABILITIES</div>
+          <h2>六大AI核心功能</h2>
+          <p>以人工智能技术赋能红色文化传播，打造全方位、沉浸式的红色教育新体验</p>
+          <div class="divider-line"></div>
+        </div>
+        <div class="ai-features-grid" id="aiFeaturesGrid">
+          <!-- Features will be rendered by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- AI问答演示区 -->
+    <section class="chat-section" id="chat-demo">
+      <div class="container">
+        <div class="section-header animate-on-scroll">
+          <div class="eyebrow">AI Q&A</div>
+          <h2>AI智能问答</h2>
+          <p>关于红色历史的任何问题，AI都能为您提供专业、准确的解答</p>
+          <div class="divider-line"></div>
+        </div>
+        <div class="chat-demo animate-on-scroll">
+          <div class="chat-sidebar">
+            <h4>推荐问题</h4>
+            <div class="preset-questions">
+              <button class="preset-question">红军长征经过了哪些地方？</button>
+              <button class="preset-question">雷锋的主要事迹是什么？</button>
+              <button class="preset-question">遵义会议的历史意义？</button>
+              <button class="preset-question">延安精神的核心内涵？</button>
+              <button class="preset-question">抗美援朝的英雄人物有哪些？</button>
+              <button class="preset-question">两弹一星精神是什么？</button>
+            </div>
+          </div>
+          <div class="chat-main">
+            <div class="chat-header">
+              <div class="chat-avatar">红</div>
+              <div class="chat-header-info">
+                <div class="name">红博士 AI助手</div>
+                <div class="status">在线 · 红色历史专家</div>
+              </div>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+              <div class="chat-msg bot">
+                <div class="chat-msg-avatar">红</div>
+                <div class="chat-msg-bubble">
+                  您好！我是红博士，红色电子AI博物馆的智能助手。我可以为您解答关于红色历史、革命文物、英雄人物等方面的问题。请问有什么可以帮您的吗？
+                </div>
+              </div>
+              <div class="chat-msg user">
+                <div class="chat-msg-avatar">我</div>
+                <div class="chat-msg-bubble">
+                  红军长征经过了哪些地方？
+                </div>
+              </div>
+              <div class="chat-msg bot">
+                <div class="chat-msg-avatar">红</div>
+                <div class="chat-msg-bubble">
+                  红军长征（1934年10月-1936年10月）是中国革命史上的伟大壮举。中央红军（红一方面军）途经江西、福建、广东、湖南、广西、贵州、云南、四川、西康、甘肃、陕西11个省，行程约二万五千里。
+                  <br><br>
+                  长征途中，红军经历了湘江战役、遵义会议、四渡赤水、巧渡金沙江、强渡大渡河、飞夺泸定桥、爬雪山、过草地等著名历史事件，最终在甘肃会宁实现三大主力会师，胜利结束长征。
+                  <br><br>
+                  长征铸就了伟大的长征精神：不怕牺牲、坚韧不拔、自强不息、勇往直前。
+                </div>
+              </div>
+            </div>
+            <div class="chat-input-area">
+              <input type="text" class="chat-input" placeholder="输入您的问题..." id="chatInput">
+              <button class="chat-send-btn" id="chatSendBtn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="22" y1="2" x2="11" y2="13"></line>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 老照片修复演示区 -->
+    <section class="restore-section">
+      <div class="container">
+        <div class="section-header animate-on-scroll">
+          <div class="eyebrow">PHOTO RESTORATION</div>
+          <h2>老照片AI修复</h2>
+          <p>上传老照片，AI自动修复破损、增强清晰度，让历史影像重现光彩</p>
+          <div class="divider-line"></div>
+        </div>
+        <div class="restore-demo animate-on-scroll">
+          <div class="restore-panel restore-old">
+            <h4>老照片</h4>
+            <div class="restore-img-box">
+              <div class="img-placeholder">1930s</div>
+            </div>
+          </div>
+          <div class="restore-arrow">
+            <div class="restore-arrow-icon">→</div>
+            <button class="btn btn-primary btn-sm">AI修复</button>
+          </div>
+          <div class="restore-panel restore-new">
+            <h4>AI修复后</h4>
+            <div class="restore-img-box">
+              <div class="img-placeholder" style="filter: none;">1930s</div>
+            </div>
+          </div>
+        </div>
+        <div class="restore-upload animate-on-scroll">
+          <div class="restore-upload-icon">📷</div>
+          <h4>上传您的老照片</h4>
+          <p>支持 JPG、PNG 格式，单张图片不超过 10MB</p>
+          <button class="btn btn-primary btn-lg">选择照片上传</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 历史场景还原演示区 -->
+    <section class="scene-section">
+      <div class="container">
+        <div class="section-header animate-on-scroll">
+          <div class="eyebrow">SCENE RECREATION</div>
+          <h2>历史场景AI还原</h2>
+          <p>输入描述，AI生成对应的历史场景图像，让您身临其境感受历史</p>
+          <div class="divider-line"></div>
+        </div>
+        <div class="scene-grid animate-on-scroll">
+          <div class="scene-card">
+            <div class="scene-img">
+              <div class="gradient-1"></div>
+              <div class="scene-label">AI生成场景</div>
+            </div>
+            <div class="scene-card-body">
+              <h4>中共一大会场</h4>
+              <p>1921年上海石库门内，中共一大代表们围坐讨论的历史场景</p>
+            </div>
+          </div>
+          <div class="scene-card">
+            <div class="scene-img">
+              <div class="gradient-2"></div>
+              <div class="scene-label">AI生成场景</div>
+            </div>
+            <div class="scene-card-body">
+              <h4>飞夺泸定桥</h4>
+              <p>红军战士冒着枪林弹雨，攀着铁索向对岸冲锋的壮烈场景</p>
+            </div>
+          </div>
+          <div class="scene-card">
+            <div class="scene-img">
+              <div class="gradient-3"></div>
+              <div class="scene-label">AI生成场景</div>
+            </div>
+            <div class="scene-card-body">
+              <h4>延安窑洞灯光</h4>
+              <p>延安窑洞中，革命先辈在油灯下研究作战方案的场景</p>
+            </div>
+          </div>
+          <div class="scene-card">
+            <div class="scene-img">
+              <div class="gradient-4"></div>
+              <div class="scene-label">AI生成场景</div>
+            </div>
+            <div class="scene-card-body">
+              <h4>开国大典</h4>
+              <p>1949年天安门广场，万众欢庆新中国成立的盛大场面</p>
+            </div>
+          </div>
+        </div>
+        <div class="scene-generator animate-on-scroll">
+          <input type="text" class="scene-generator-input" placeholder="描述你想生成的历史场景，如：井冈山会师场景...">
+          <button class="btn btn-primary btn-lg">生成场景</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- AI语音讲解 -->
+    <section class="voice-section">
+      <div class="container">
+        <div class="section-header animate-on-scroll">
+          <div class="eyebrow">AI VOICE GUIDE</div>
+          <h2>AI语音讲解</h2>
+          <p>AI数字人深情讲解文物背后的故事，支持多种方言和语言</p>
+          <div class="divider-line"></div>
+        </div>
+        <div class="voice-demo animate-on-scroll">
+          <div class="voice-digital-human">
+            <div class="voice-waves">
+              <div class="voice-wave"></div>
+              <div class="voice-wave"></div>
+              <div class="voice-wave"></div>
+              <div class="voice-wave"></div>
+              <div class="voice-wave"></div>
+              <div class="voice-wave"></div>
+              <div class="voice-wave"></div>
+            </div>
+            <div class="human-figure">
+              <div class="human-name">红韵</div>
+              <div class="human-title">AI数字讲解员</div>
+            </div>
+          </div>
+          <div class="voice-player">
+            <div class="voice-player-title">半条被子的故事</div>
+            <div class="voice-player-subtitle">第 1 集 · 革命文物厅</div>
+            <div class="voice-progress">
+              <div class="voice-progress-bar">
+                <div class="voice-progress-fill"></div>
+              </div>
+              <div class="voice-progress-time">
+                <span>02:45</span>
+                <span>08:30</span>
+              </div>
+            </div>
+            <div class="voice-controls">
+              <button class="voice-ctrl-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="19 20 9 12 19 4 19 20"></polygon>
+                  <line x1="5" y1="19" x2="5" y2="5"></line>
+                </svg>
+              </button>
+              <button class="voice-play-btn" id="voicePlayBtn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+              </button>
+              <button class="voice-ctrl-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="5 4 15 12 5 20 5 4"></polygon>
+                  <line x1="19" y1="5" x2="19" y2="19"></line>
+                </svg>
+              </button>
+            </div>
+            <div class="voice-playlist">
+              <h5>讲解列表</h5>
+              <div class="voice-playlist-items">
+                <div class="voice-playlist-item active">
+                  <span class="idx">01</span>
+                  <span class="title">半条被子的故事</span>
+                  <span class="duration">08:30</span>
+                </div>
+                <div class="voice-playlist-item">
+                  <span class="idx">02</span>
+                  <span class="title">《共产党宣言》中文全译本</span>
+                  <span class="duration">06:45</span>
+                </div>
+                <div class="voice-playlist-item">
+                  <span class="idx">03</span>
+                  <span class="title">雷锋日记背后的故事</span>
+                  <span class="duration">07:20</span>
+                </div>
+                <div class="voice-playlist-item">
+                  <span class="idx">04</span>
+                  <span class="title">狼牙山五壮士</span>
+                  <span class="duration">09:15</span>
+                </div>
+                <div class="voice-playlist-item">
+                  <span class="idx">05</span>
+                  <span class="title">邓稼先与两弹一星</span>
+                  <span class="duration">10:30</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 智能时间轴生成器 -->
+    <section class="timeline-section">
+      <div class="container">
+        <div class="section-header animate-on-scroll">
+          <div class="eyebrow">SMART TIMELINE</div>
+          <h2>智能时间轴生成器</h2>
+          <p>输入年代或事件，AI为您生成专属历史时间轴，理清历史脉络</p>
+          <div class="divider-line"></div>
+        </div>
+        <div class="timeline-generator animate-on-scroll">
+          <div class="timeline-generator-input-wrap">
+            <input type="text" class="timeline-generator-input" placeholder="输入年代或关键词，如：长征、抗日战争、改革开放...">
+            <button class="btn btn-primary btn-lg">生成时间轴</button>
+          </div>
+          <div class="timeline-tags">
+            <span class="timeline-tag">长征时期</span>
+            <span class="timeline-tag">抗日战争</span>
+            <span class="timeline-tag">解放战争</span>
+            <span class="timeline-tag">改革开放</span>
+            <span class="timeline-tag">新时代</span>
+          </div>
+        </div>
+        <div class="timeline-result animate-on-scroll" id="timelineResult">
+          <!-- 示例：长征时期时间轴 -->
+          <div class="timeline-item">
+            <div class="timeline-item-content">
+              <div class="timeline-item-year">1934.10</div>
+              <div class="timeline-item-title">长征开始</div>
+              <div class="timeline-item-desc">中央红军从江西瑞金出发，开始二万五千里长征，这是人类历史上的伟大壮举。</div>
+            </div>
+            <div class="timeline-item-dot"></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-item-content">
+              <div class="timeline-item-year">1935.01</div>
+              <div class="timeline-item-title">遵义会议</div>
+              <div class="timeline-item-desc">确立了毛泽东在党中央和红军的领导地位，是党的历史上生死攸关的转折点。</div>
+            </div>
+            <div class="timeline-item-dot"></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-item-content">
+              <div class="timeline-item-year">1935.05</div>
+              <div class="timeline-item-title">巧渡金沙江</div>
+              <div class="timeline-item-desc">红军主力渡过金沙江，跳出了敌人的包围圈，取得了战略转移中具有决定意义的胜利。</div>
+            </div>
+            <div class="timeline-item-dot"></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-item-content">
+              <div class="timeline-item-year">1935.05</div>
+              <div class="timeline-item-title">强渡大渡河·飞夺泸定桥</div>
+              <div class="timeline-item-desc">红军战士以无畏的英雄气概，飞夺泸定桥，创造了战争史上的奇迹。</div>
+            </div>
+            <div class="timeline-item-dot"></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-item-content">
+              <div class="timeline-item-year">1936.10</div>
+              <div class="timeline-item-title">长征胜利</div>
+              <div class="timeline-item-desc">红军三大主力在甘肃会宁会师，标志着万里长征胜利结束，铸就了伟大的长征精神。</div>
+            </div>
+            <div class="timeline-item-dot"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 底部 -->
+  <div id="footer-container"></div>
+
+  <script src="mock.js"></script>
+  <script src="app.js"></script>
+  <script>
+    // 渲染导航和底部
+    document.getElementById('navbar-container').innerHTML = MuseumUtils.getNavHTML('ai');
+    document.getElementById('footer-container').innerHTML = MuseumUtils.getFooterHTML();
+
+    // 渲染AI功能卡片
+    (function() {
+      const grid = document.getElementById('aiFeaturesGrid');
+      const icons = {
+        'bot': '🤖',
+        'message-circle': '💬',
+        'image': '🖼️',
+        'palette': '🎨',
+        'volume-2': '🔊',
+        'calendar': '📅'
+      };
+      grid.innerHTML = window.MOCK.aiFeatures.map(f => `
+        <div class="ai-feature-card ${f.color} animate-on-scroll">
+          <div class="ai-feature-icon">${icons[f.icon] || '✨'}</div>
+          <h3>${f.name}</h3>
+          <p>${f.desc}</p>
+          <a href="#${f.id}" class="feature-link">
+            立即体验
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </a>
+        </div>
+      `).join('');
+    })();
+
+    // 聊天模拟
+    (function() {
+      const presetQuestions = document.querySelectorAll('.preset-question');
+      const chatMessages = document.getElementById('chatMessages');
+      const chatInput = document.getElementById('chatInput');
+      const chatSendBtn = document.getElementById('chatSendBtn');
+
+      const responses = {
+        '红军长征经过了哪些地方？': '红军长征（1934年10月-1936年10月）途经江西、福建、广东、湖南、广西、贵州、云南、四川、西康、甘肃、陕西11个省，行程约二万五千里。途中经历了湘江战役、遵义会议、四渡赤水、巧渡金沙江、强渡大渡河、飞夺泸定桥、爬雪山、过草地等著名历史事件。',
+        '雷锋的主要事迹是什么？': '雷锋同志是全心全意为人民服务的楷模。他的主要事迹包括：帮助战友学习文化、节省每一分钱支援国家建设、冒雨送大嫂回家、带病参加抗洪抢险、利用节假日到工地义务劳动等。他用短暂的22年生命，诠释了"人的生命是有限的，可是，为人民服务是无限的"。',
+        '遵义会议的历史意义？': '遵义会议（1935年1月）是中国共产党历史上一个生死攸关的转折点。会议确立了毛泽东在党中央和红军的领导地位，在极端危急的历史关头，挽救了党，挽救了红军，挽救了中国革命。遵义会议标志着中国共产党从幼年走向成熟。',
+        '延安精神的核心内涵？': '延安精神的核心内涵包括：坚定正确的政治方向、解放思想实事求是的思想路线、全心全意为人民服务的根本宗旨、自力更生艰苦奋斗的创业精神。延安精神是中国共产党人的传家宝，是中华民族宝贵的精神财富。',
+        '抗美援朝的英雄人物有哪些？': '抗美援朝战争中涌现出无数英雄人物，包括：特级英雄黄继光（用身体堵住敌人枪眼）、特级英雄杨根思（抱起炸药包与敌人同归于尽）、一级英雄邱少云（烈火烧身严守潜伏纪律）、一级英雄罗盛教（跳入冰窟抢救朝鲜少年）、空战英雄王海等。他们被誉为"最可爱的人"。',
+        '两弹一星精神是什么？': '两弹一星精神的内涵是：热爱祖国、无私奉献，自力更生、艰苦奋斗，大力协同、勇于登攀。20世纪五六十年代，面对严峻的国际形势，以钱学森、邓稼先、钱三强等为代表的科学家，在极其艰苦的条件下，成功研制出原子弹、氢弹和人造卫星，创造了举世瞩目的奇迹。'
+      };
+
+      function addMessage(text, isUser) {
+        const msg = document.createElement('div');
+        msg.className = 'chat-msg ' + (isUser ? 'user' : 'bot');
+        msg.innerHTML = `
+          <div class="chat-msg-avatar">${isUser ? '我' : '红'}</div>
+          <div class="chat-msg-bubble">${text}</div>
+        `;
+        chatMessages.appendChild(msg);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+
+      presetQuestions.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const q = this.textContent.trim();
+          addMessage(q, true);
+          setTimeout(() => {
+            addMessage(responses[q] || '感谢您的提问！我正在学习更多红色历史知识，敬请期待。', false);
+          }, 800);
+        });
+      });
+
+      function sendMessage() {
+        const text = chatInput.value.trim();
+        if (!text) return;
+        addMessage(text, true);
+        chatInput.value = '';
+        setTimeout(() => {
+          addMessage('这是一个很好的问题！作为AI助手，我正在不断学习红色历史知识。您可以尝试点击左侧的推荐问题，获取更详细的解答。', false);
+        }, 800);
+      }
+
+      chatSendBtn.addEventListener('click', sendMessage);
+      chatInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') sendMessage();
+      });
+    })();
+
+    // 语音播放控制
+    (function() {
+      const playBtn = document.getElementById('voicePlayBtn');
+      let isPlaying = false;
+      playBtn.addEventListener('click', function() {
+        isPlaying = !isPlaying;
+        this.innerHTML = isPlaying
+          ? '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>'
+          : '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>';
+      });
+
+      // 播放列表切换
+      document.querySelectorAll('.voice-playlist-item').forEach(item => {
+        item.addEventListener('click', function() {
+          document.querySelectorAll('.voice-playlist-item').forEach(i => i.classList.remove('active'));
+          this.classList.add('active');
+        });
+      });
+    })();
+
+    // 时间轴标签
+    (function() {
+      document.querySelectorAll('.timeline-tag').forEach(tag => {
+        tag.addEventListener('click', function() {
+          document.querySelectorAll('.timeline-tag').forEach(t => t.style.background = '');
+          this.style.background = 'var(--red-50)';
+          this.style.borderColor = 'var(--red-300)';
+          this.style.color = 'var(--red-600)';
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

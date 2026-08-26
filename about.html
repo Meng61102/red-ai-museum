@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>关于我们 - 红色电子AI博物馆</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ========== About Page Styles ========== */
+
+    /* Hero */
+    .about-hero {
+      position: relative;
+      min-height: 520px;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      background: linear-gradient(135deg, #1A0A0A 0%, #2C1810 40%, #1A2332 100%);
+    }
+    .about-hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(196, 30, 58, 0.25) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 30%, rgba(212, 175, 55, 0.15) 0%, transparent 40%);
+      pointer-events: none;
+    }
+    .about-hero-content {
+      position: relative;
+      z-index: 2;
+      padding: var(--space-20) 0;
+      color: #fff;
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .about-hero-content .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-5);
+      background: rgba(196, 30, 58, 0.15);
+      border: 1px solid rgba(196, 30, 58, 0.4);
+      border-radius: var(--radius-full);
+      font-size: var(--fs-sm);
+      color: var(--gold-300);
+      margin-bottom: var(--space-6);
+      backdrop-filter: blur(8px);
+      letter-spacing: 0.08em;
+    }
+    .about-hero-content h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      color: #fff;
+      margin-bottom: var(--space-5);
+      line-height: 1.2;
+    }
+    .about-hero-content h1 .highlight {
+      background: linear-gradient(135deg, var(--gold-300), var(--gold-500));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .about-hero-content .mission {
+      font-size: var(--fs-lg);
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.9;
+      font-style: italic;
+      position: relative;
+      padding: 0 var(--space-8);
+    }
+    .about-hero-content .mission::before,
+    .about-hero-content .mission::after {
+      content: '"';
+      font-size: var(--fs-3xl);
+      color: var(--gold-400);
+      font-family: var(--font-display);
+      opacity: 0.6;
+      position: absolute;
+    }
+    .about-hero-content .mission::before {
+      top: -10px;
+      left: 0;
+    }
+    .about-hero-content .mission::after {
+      bottom: -30px;
+      right: 0;
+    }
+
+    /* Intro Section */
+    .intro-section {
+      padding: var(--space-20) 0;
+    }
+    .intro-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-12);
+      align-items: center;
+    }
+    .intro-text h2 {
+      font-size: var(--fs-3xl);
+      margin-bottom: var(--space-5);
+      position: relative;
+      padding-bottom: var(--space-4);
+    }
+    .intro-text h2::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--red-500), var(--gold-400));
+      border-radius: 2px;
+    }
+    .intro-text p {
+      color: var(--text-secondary);
+      line-height: 2;
+      margin-bottom: var(--space-4);
+      font-size: var(--fs-base);
+    }
+    .intro-text p:first-of-type::first-letter {
+      font-size: var(--fs-3xl);
+      font-weight: 700;
+      color: var(--red-500);
+      float: left;
+      line-height: 1;
+      padding-right: var(--space-2);
+      padding-top: 4px;
+      font-family: var(--font-display);
+    }
+    .intro-visual {
+      aspect-ratio: 4/3;
+      border-radius: var(--radius-xl);
+      background: linear-gradient(135deg, var(--red-600) 0%, var(--red-800) 50%, var(--gold-600) 100%);
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-xl);
+    }
+    .intro-visual::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 200px;
+      height: 200px;
+      border: 2px solid rgba(212, 175, 55, 0.3);
+      border-radius: 50%;
+    }
+    .intro-visual::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 300px;
+      height: 300px;
+      border: 1px solid rgba(212, 175, 55, 0.15);
+      border-radius: 50%;
+    }
+    .intro-visual-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      color: #fff;
+    }
+    .intro-visual-center .main {
+      font-family: var(--font-display);
+      font-size: var(--fs-5xl);
+      font-weight: 900;
+      color: var(--gold-300);
+      text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      line-height: 1;
+    }
+    .intro-visual-center .sub {
+      font-size: var(--fs-sm);
+      color: rgba(255,255,255,0.7);
+      margin-top: var(--space-3);
+      letter-spacing: 0.2em;
+    }
+
+    /* Features Section */
+    .features-section {
+      padding: var(--space-20) 0;
+      background: linear-gradient(180deg, var(--bg) 0%, #F5EDE8 100%);
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-6);
+    }
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-8) var(--space-6);
+      text-align: center;
+      transition: all var(--duration-base);
+      position: relative;
+      overflow: hidden;
+    }
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--red-500), var(--gold-400));
+      opacity: 0;
+      transition: opacity var(--duration-base);
+    }
+    .feature-card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-xl);
+      border-color: var(--red-200);
+    }
+    .feature-card:hover::before {
+      opacity: 1;
+    }
+    .feature-icon {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto var(--space-5);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      background: linear-gradient(135deg, var(--red-50), var(--gold-50));
+    }
+    .feature-card h3 {
+      font-size: var(--fs-xl);
+      margin-bottom: var(--space-3);
+    }
+    .feature-card p {
+      font-size: var(--fs-sm);
+      color: var(--text-muted);
+      line-height: 1.8;
+    }
+
+    /* Timeline Section */
+    .history-section {
+      padding: var(--space-20) 0;
+    }
+    .history-timeline {
+      position: relative;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: var(--space-8) 0;
+    }
+    .history-timeline::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: linear-gradient(180deg, var(--red-500), var(--gold-400), var(--red-500));
+      transform: translateX(-50%);
+      border-radius: 2px;
+    }
+    .history-item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: var(--space-10);
+      position: relative;
+    }
+    .history-item:nth-child(odd) {
+      flex-direction: row;
+    }
+    .history-item:nth-child(even) {
+      flex-direction: row-reverse;
+    }
+    .history-item-content {
+      width: calc(50% - 40px);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-6);
+      box-shadow: var(--shadow-sm);
+      transition: all var(--duration-base);
+    }
+    .history-item-content:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-2px);
+    }
+    .history-item-dot {
+      position: absolute;
+      left: 50%;
+      top: var(--space-6);
+      transform: translateX(-50%);
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--red-500);
+      border: 4px solid var(--bg);
+      box-shadow: 0 0 0 2px var(--red-500);
+      z-index: 1;
+    }
+    .history-item:nth-child(even) .history-item-dot {
+      background: var(--gold-400);
+      box-shadow: 0 0 0 2px var(--gold-400);
+    }
+    .history-year {
+      font-family: var(--font-display);
+      font-size: var(--fs-3xl);
+      font-weight: 700;
+      color: var(--red-500);
+      line-height: 1;
+      margin-bottom: var(--space-2);
+    }
+    .history-item:nth-child(even) .history-year {
+      color: var(--gold-600);
+    }
+    .history-title {
+      font-size: var(--fs-xl);
+      font-weight: 600;
+      margin-bottom: var(--space-3);
+      color: var(--text);
+    }
+    .history-desc {
+      font-size: var(--fs-sm);
+      color: var(--text-muted);
+      line-height: 1.8;
+    }
+    .history-tag {
+      display: inline-block;
+      padding: 2px 10px;
+      background: var(--red-50);
+      color: var(--red-600);
+      border-radius: var(--radius-full);
+      font-size: var(--fs-xs);
+      font-weight: 500;
+      margin-bottom: var(--space-3);
+    }
+    .history-item:nth-child(even) .history-tag {
+      background: var(--gold-50);
+      color: var(--gold-600);
+    }
+
+    /* Data Overview */
+    .data-section {
+      padding: var(--space-20) 0;
+      background: linear-gradient(135deg, var(--red-800) 0%, var(--red-900) 50%, #1A0A0A 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .data-section::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 30%, rgba(196, 30, 58, 0.2) 0%, transparent 40%);
+      pointer-events: none;
+    }
+    .data-section .section-header h2,
+    .data-section .section-header p {
+      color: #fff;
+    }
+    .data-section .section-header .eyebrow {
+      color: var(--gold-300);
+    }
+    .data-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-6);
+      position: relative;
+      z-index: 1;
+    }
+    .data-card {
+      text-align: center;
+      padding: var(--space-8) var(--space-4);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius-xl);
+      background: rgba(255,255,255,0.03);
+      backdrop-filter: blur(10px);
+      transition: all var(--duration-base);
+    }
+    .data-card:hover {
+      border-color: rgba(212, 175, 55, 0.3);
+      background: rgba(255,255,255,0.06);
+      transform: translateY(-4px);
+    }
+    .data-card .icon {
+      font-size: 40px;
+      margin-bottom: var(--space-4);
+    }
+    .data-card .num {
+      font-family: var(--font-display);
+      font-size: var(--fs-5xl);
+      font-weight: 800;
+      color: var(--gold-300);
+      line-height: 1;
+      margin-bottom: var(--space-3);
+    }
+    .data-card .label {
+      font-size: var(--fs-base);
+      color: rgba(255,255,255,0.7);
+    }
+
+    /* Partners Section */
+    .partners-section {
+      padding: var(--space-20) 0;
+    }
+    .partners-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: var(--space-4);
+    }
+    .partner-logo {
+      aspect-ratio: 3/2;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--fs-sm);
+      color: var(--text-muted);
+      font-weight: 500;
+      transition: all var(--duration-base);
+      text-align: center;
+      padding: var(--space-3);
+    }
+    .partner-logo:hover {
+      border-color: var(--red-200);
+      box-shadow: var(--shadow-md);
+      color: var(--red-600);
+      transform: translateY(-2px);
+    }
+
+    /* Contact Section */
+    .contact-section {
+      padding: var(--space-20) 0;
+      background: linear-gradient(180deg, #F5EDE8 0%, var(--bg) 100%);
+    }
+    .contact-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: var(--space-10);
+    }
+    .contact-info h2 {
+      font-size: var(--fs-3xl);
+      margin-bottom: var(--space-3);
+    }
+    .contact-info > p {
+      color: var(--text-muted);
+      margin-bottom: var(--space-8);
+    }
+    .contact-items {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-5);
+    }
+    .contact-item {
+      display: flex;
+      gap: var(--space-4);
+      align-items: flex-start;
+    }
+    .contact-item-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, var(--red-50), var(--gold-50));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .contact-item-content h4 {
+      font-size: var(--fs-base);
+      margin-bottom: var(--space-1);
+    }
+    .contact-item-content p {
+      font-size: var(--fs-sm);
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    .contact-form {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-8);
+      box-shadow: var(--shadow-md);
+    }
+    .contact-form h3 {
+      font-size: var(--fs-xl);
+      margin-bottom: var(--space-6);
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-4);
+      margin-bottom: var(--space-4);
+    }
+    .form-group {
+      margin-bottom: var(--space-4);
+    }
+    .form-group label {
+      display: block;
+      font-size: var(--fs-sm);
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: var(--space-2);
+    }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: var(--space-3) var(--space-4);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: var(--fs-sm);
+      font-family: inherit;
+      outline: none;
+      transition: border-color var(--duration-fast);
+      background: var(--surface);
+    }
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      border-color: var(--color-primary);
+    }
+    .form-group textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+    .form-submit {
+      width: 100%;
+      padding: var(--space-4);
+      font-size: var(--fs-base);
+    }
+
+    /* FAQ Section */
+    .faq-section {
+      padding: var(--space-20) 0;
+    }
+    .faq-list {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .faq-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      margin-bottom: var(--space-3);
+      overflow: hidden;
+      transition: all var(--duration-fast);
+    }
+    .faq-item.active {
+      border-color: var(--red-200);
+      box-shadow: var(--shadow-md);
+    }
+    .faq-question {
+      padding: var(--space-5) var(--space-6);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: var(--fs-base);
+      color: var(--text);
+      transition: color var(--duration-fast);
+    }
+    .faq-question:hover {
+      color: var(--color-primary);
+    }
+    .faq-question .icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--gray-100);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all var(--duration-base);
+      font-size: var(--fs-sm);
+      color: var(--text-muted);
+    }
+    .faq-item.active .faq-question .icon {
+      background: var(--red-500);
+      color: #fff;
+      transform: rotate(45deg);
+    }
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.3s ease;
+    }
+    .faq-item.active .faq-answer {
+      max-height: 300px;
+      padding: 0 var(--space-6) var(--space-5);
+    }
+    .faq-answer p {
+      color: var(--text-muted);
+      line-height: 1.9;
+      font-size: var(--fs-sm);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+      .data-grid { grid-template-columns: repeat(2, 1fr); }
+      .partners-grid { grid-template-columns: repeat(4, 1fr); }
+      .contact-wrap { grid-template-columns: 1fr; }
+      .intro-content { grid-template-columns: 1fr; gap: var(--space-8); }
+    }
+    @media (max-width: 768px) {
+      .about-hero-content h1 { font-size: var(--fs-3xl); }
+      .about-hero-content .mission { padding: 0 var(--space-4); font-size: var(--fs-base); }
+      .features-grid { grid-template-columns: 1fr; }
+      .data-grid { grid-template-columns: repeat(2, 1fr); gap: var(--space-4); }
+      .data-card { padding: var(--space-6) var(--space-3); }
+      .data-card .num { font-size: var(--fs-3xl); }
+      .partners-grid { grid-template-columns: repeat(3, 1fr); }
+      .form-row { grid-template-columns: 1fr; }
+      .history-timeline::before { left: 20px; }
+      .history-item, .history-item:nth-child(even) { flex-direction: row; padding-left: 50px; }
+      .history-item-content { width: 100%; }
+      .history-item-dot { left: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- 导航栏 -->
+  <div id="navbar-container"></div>
+
+  <main>
+    <!-- Hero区 -->
+    <section class="about-hero">
+      <div class="container">
+        <div class="about-hero-content animate-on-scroll">
+          <div class="eyebrow">ABOUT US · 关于我们</div>
+          <h1>关于<span class="highlight">红色电子AI博物馆</span></h1>
+          <p class="mission">
+            以科技之力传承红色基因，用数字之光照亮信仰之路。让每一位参观者都能在沉浸式体验中感受革命先辈的崇高精神，让红色文化在新时代焕发新的生机与活力。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 博物馆简介 -->
+    <section class="intro-section">
+      <div class="container">
+        <div class="intro-content">
+          <div class="intro-text animate-on-scroll">
+            <h2>博物馆简介</h2>
+            <p>红色电子AI博物馆是一座以人工智能技术为核心驱动力的现代化线上红色文化博物馆。我们致力于运用前沿科技手段，创新红色文化传播方式，打造沉浸式、互动式、个性化的红色教育新阵地。</p>
+            <p>博物馆设有建党历程厅、革命文物厅、英烈人物厅、战役历史厅、红色精神厅、新时代成就厅六大主题展厅，收藏珍贵文物数字资料782件，收录英雄人物186位，全面展示中国共产党百年奋斗的光辉历程和伟大成就。</p>
+            <p>我们秉承"让历史说话，让文物活起来"的理念，通过AI智能问答、老照片修复、历史场景还原、AI语音讲解等创新功能，让红色文化突破时空限制，走进千家万户，走进每一个人的心中。</p>
+          </div>
+          <div class="intro-visual animate-on-scroll">
+            <div class="intro-visual-center">
+              <div class="main">红</div>
+              <div class="sub">RED AI MUSEUM</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 我们的特色 -->
+    <section class="features-section">
+      <div class="container">
+        <div class="section-header animate-on-scroll">
+          <div class="eyebrow">OUR FEATURES</div>
+          <h2>我们的特色</h2>
+          <p>以创新科技赋能红色文化，打造与众不同的博物馆体验</p>
+          <div class="divider-line"></div>
+        </div>
+        <div class="features-grid animate-on-scroll">
+          <div class="feature-card">
+            <div class="feature-icon">🤖</div>
+            <h3>AI赋能</h3>
+            <p>运用人工智能技术，提供智能导览、知识问答、语音讲解等服务，打造个性化参观体验。</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📚</div>
+            <h3>海量资源</h3>
+            <p>汇集全国红色文化资源，六大主题展厅、782件珍贵文物、186位英雄人物，内容丰富全面。</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🎬</div>
+            <h3>沉浸体验</h3>
+            <p>运用VR/AR、3D建模、AI生成等技术，还原历史场景，让参观者身临其境感受历史。</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">❤️</div>
+            <h3>公益属性</h3>
+            <p>坚持公益性质，免费向全社会开放，让红色文化惠及更多人群，传承红色基因。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 发展历程 -->
+    <section class="history-section">
+      <div class="container">
+        <div class="section-header animate-on-scroll">
+          <div class="eyebrow">OUR HISTORY</div>
+          <h2>发展历程</h2>
+          <p>一步一个脚印，见证红色数字文化事业的成长与发展</p>
+          <div class="divider-line"></div>
+        </div>
+        <div class="history-timeline animate-on-scroll">
+          <div class="history-item">
+            <div class="history-item-content">
+              <div class="history-tag">项目启动</div>
+              <div class="history-year">2024</div>
+              <div class="history-title">红色电子AI博物馆项目正式启动</div>
+              <div class="history-desc">在国家文物局和中央党史和文献研究院的指导下，红色电子AI博物馆项目正式立项启动，组建专业团队，开始整体规划与设计。</div>
+            </div>
+            <div class="history-item-dot"></div>
+          </div>
+          <div class="history-item">
+            <div class="history-item-content">
+              <div class="history-tag">一期建设</div>
+              <div class="history-year">2025</div>
+              <div class="history-title">一期工程正式上线</div>
+              <div class="history-desc">完成六大主题展厅的基础建设，上线首批300件珍贵文物数字资料，实现基础浏览和搜索功能，正式向公众开放。</div>
+            </div>
+            <div class="history-item-dot"></div>
+          </div>
+          <div class="history-item">
+            <div class="history-item-content">
+              <div class="history-tag">技术突破</div>
+              <div class="history-year">2025</div>
+              <div class="history-title">AI技术深度融合</div>
+              <div class="history-desc">引入大语言模型和AI图像技术，推出智能问答、老照片修复、语音讲解等功能，博物馆交互体验迈上新台阶。</div>
+            </div>
+            <div class="history-item-dot"></div>
+          </div>
+          <div class="history-item">
+            <div class="history-item-content">
+              <div class="history-tag">全面升级</div>
+              <div class="history-year">2026</div>
+              <div class="history-title">AI功能全面上线</div>
+              <div class="history-desc">历史场景还原、智能时间轴生成、数字人讲解员等AI功能全面上线，红色地图系统和VR展厅同步推出，累计访问量突破千万。</div>
+            </div>
+            <div class="history-item-dot"></div>
+          </div>
+          <div class="history-item">
+            <div class="history-item-content">
+              <div class="history-tag">展望未来</div>
+              <div class="history-year">2027</div>
+              <div class="history-title">打造国家级红色文化平台</div>
+              <div class="history-desc">计划与全国更多博物馆、纪念馆开展深度合作，丰富馆藏资源，完善AI能力，建设成为国内领先、国际知名的红色文化数字平台。</div>
+            </div>
+            <div class="history-item-dot"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 数据概览 -->
+    <section class="data-section">
+      <div class="container">
+        <div class="section-header animate-on-scroll">
+          <div class="eyebrow">DATA OVERVIEW</div>
+          <h2>数据概览</h2>
+          <p>用数字见证我们的成长与努力</p>
+          <div class="divider-line"></div>
+        </div>
+        <div class="data-grid animate-on-scroll">
+          <div class="data-card">
+            <div class="icon">🏛️</div>
+            <div class="num" data-target="6">0</div>
+            <div class="label">主题展厅</div>
+          </div>
+          <div class="data-card">
+            <div class="icon">📜</div>
+            <div class="num" data-target="782">0</div>
+            <div class="label">珍贵文物</div>
+          </div>
+          <div class="data-card">
+            <div class="icon">🪖</div>
+            <div class="num" data-target="186">0</div>
+            <div class="label">英烈人物</div>
+          </div>
+          <div class="data-card">
+            <div class="icon">👥</div>
+            <div class="num" data-target="1280" data-suffix="万+">0</div>
+            <div class="label">累计访问量</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 合作机构 -->
+    <section class="partners-section">
+      <div class="container">
+        <div class="section-header animate-on-scroll">
+          <div class="eyebrow">PARTNERS</div>
+          <h2>合作机构</h2>
+          <p>携手合作伙伴，共同推动红色文化事业发展</p>
+          <div class="divider-line"></div>
+        </div>
+        <div class="partners-grid animate-on-scroll">
+          <div class="partner-logo">国家文物局</div>
+          <div class="partner-logo">中央党史和文献研究院</div>
+          <div class="partner-logo">中国国家博物馆</div>
+          <div class="partner-logo">中共一大会址纪念馆</div>
+          <div class="partner-logo">延安革命纪念馆</div>
+          <div class="partner-logo">井冈山革命博物馆</div>
+          <div class="partner-logo">清华大学</div>
+          <div class="partner-logo">北京大学</div>
+          <div class="partner-logo">中国人民大学</div>
+          <div class="partner-logo">中科院自动化所</div>
+          <div class="partner-logo">新华社</div>
+          <div class="partner-logo">人民日报社</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 联系我们 -->
+    <section class="contact-section">
+      <div class="container">
+        <div class="section-header animate-on-scroll">
+          <div class="eyebrow">CONTACT US</div>
+          <h2>联系我们</h2>
+          <p>欢迎与我们联系，共同推动红色文化传播事业</p>
+          <div class="divider-line"></div>
+        </div>
+        <div class="contact-wrap animate-on-scroll">
+          <div class="contact-info">
+            <h2>联系方式</h2>
+            <p>如有合作意向、意见建议或其他问题，欢迎通过以下方式联系我们</p>
+            <div class="contact-items">
+              <div class="contact-item">
+                <div class="contact-item-icon">📧</div>
+                <div class="contact-item-content">
+                  <h4>电子邮箱</h4>
+                  <p>contact@redaimuseum.org.cn</p>
+                  <p>cooperation@redaimuseum.org.cn</p>
+                </div>
+              </div>
+              <div class="contact-item">
+                <div class="contact-item-icon">📞</div>
+                <div class="contact-item-content">
+                  <h4>联系电话</h4>
+                  <p>010-12345678（工作日 9:00-17:00）</p>
+                  <p>合作热线：010-87654321</p>
+                </div>
+              </div>
+              <div class="contact-item">
+                <div class="contact-item-icon">📍</div>
+                <div class="contact-item-content">
+                  <h4>办公地址</h4>
+                  <p>北京市朝阳区红色文化大厦</p>
+                  <p>邮编：100000</p>
+                </div>
+              </div>
+              <div class="contact-item">
+                <div class="contact-item-icon">💬</div>
+                <div class="contact-item-content">
+                  <h4>官方账号</h4>
+                  <p>微信公众号：红色电子AI博物馆</p>
+                  <p>微博：@红色电子AI博物馆</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="contact-form">
+            <h3>留言反馈</h3>
+            <form id="contactForm">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>您的姓名 *</label>
+                  <input type="text" placeholder="请输入姓名" required>
+                </div>
+                <div class="form-group">
+                  <label>联系电话 *</label>
+                  <input type="tel" placeholder="请输入手机号" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>电子邮箱</label>
+                <input type="email" placeholder="请输入邮箱地址">
+              </div>
+              <div class="form-group">
+                <label>留言类型</label>
+                <select>
+                  <option>意见建议</option>
+                  <option>合作咨询</option>
+                  <option>技术支持</option>
+                  <option>内容纠错</option>
+                  <option>其他</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>留言内容 *</label>
+                <textarea placeholder="请详细描述您的问题或建议..." required></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary btn-lg form-submit">提交留言</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 常见问题 -->
+    <section class="faq-section">
+      <div class="container">
+        <div class="section-header animate-on-scroll">
+          <div class="eyebrow">FAQ</div>
+          <h2>常见问题</h2>
+          <p>以下是用户最常问到的问题，希望能帮到您</p>
+          <div class="divider-line"></div>
+        </div>
+        <div class="faq-list animate-on-scroll">
+          <div class="faq-item active">
+            <div class="faq-question">
+              <span>红色电子AI博物馆是免费的吗？</span>
+              <span class="icon">+</span>
+            </div>
+            <div class="faq-answer">
+              <p>是的，红色电子AI博物馆坚持公益属性，所有内容和功能均免费向公众开放。我们的宗旨是让红色文化惠及更多人群，传承红色基因，赓续精神血脉。您可以自由浏览所有展厅、使用所有AI功能，无需付费。</p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-question">
+              <span>AI功能的回答准确吗？</span>
+              <span class="icon">+</span>
+            </div>
+            <div class="faq-answer">
+              <p>我们的AI系统基于权威党史资料和专业知识库训练，并经过党史专家严格审核。所有回答均以官方历史资料为准，确保内容的准确性和权威性。同时，我们也在不断优化和完善AI模型，提升回答质量。</p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-question">
+              <span>可以在手机上访问吗？</span>
+              <span class="icon">+</span>
+            </div>
+            <div class="faq-answer">
+              <p>当然可以。红色电子AI博物馆采用响应式设计，完美适配手机、平板、电脑等各种设备。您可以随时随地通过浏览器访问我们的网站，也可以关注微信公众号，在移动端享受同样精彩的红色文化体验。</p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-question">
+              <span>学校可以组织线上参观吗？</span>
+              <span class="icon">+</span>
+            </div>
+            <div class="faq-answer">
+              <p>非常欢迎学校组织线上参观活动！我们专门为学校和教育机构提供团体参观服务，包括定制参观路线、AI讲解员包场、线上互动课堂等功能。如有需要，请通过合作邮箱与我们联系，我们将为您提供专业的服务方案。</p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-question">
+              <span>如何提交合作或捐赠意向？</span>
+              <span class="icon">+</span>
+            </div>
+            <div class="faq-answer">
+              <p>我们非常欢迎各博物馆、纪念馆、高校、研究机构以及社会各界与我们开展合作，也接受文物数字资料、历史照片等的捐赠。请通过合作邮箱（cooperation@redaimuseum.org.cn）或合作热线与我们联系，我们将有专人与您对接。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 底部 -->
+  <div id="footer-container"></div>
+
+  <script src="mock.js"></script>
+  <script src="app.js"></script>
+  <script>
+    // 渲染导航和底部
+    document.getElementById('navbar-container').innerHTML = MuseumUtils.getNavHTML('about');
+    document.getElementById('footer-container').innerHTML = MuseumUtils.getFooterHTML();
+
+    // FAQ 折叠面板
+    (function() {
+      const faqItems = document.querySelectorAll('.faq-item');
+      faqItems.forEach(item => {
+        const question = item.querySelector('.faq-question');
+        question.addEventListener('click', function() {
+          const isActive = item.classList.contains('active');
+          // 关闭所有
+          faqItems.forEach(i => i.classList.remove('active'));
+          // 切换当前
+          if (!isActive) {
+            item.classList.add('active');
+          }
+        });
+      });
+    })();
+
+    // 数字动画
+    (function() {
+      const dataCards = document.querySelectorAll('.data-card .num');
+      let animated = false;
+      
+      function animateAll() {
+        if (animated) return;
+        animated = true;
+        dataCards.forEach(el => {
+          const target = parseInt(el.dataset.target);
+          const suffix = el.dataset.suffix || '';
+          const duration = 2000;
+          const startTime = performance.now();
+          
+          function update(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            const current = Math.floor(target * eased);
+            el.textContent = current.toLocaleString() + suffix;
+            if (progress < 1) {
+              requestAnimationFrame(update);
+            } else {
+              el.textContent = target.toLocaleString() + suffix;
+            }
+          }
+          requestAnimationFrame(update);
+        });
+      }
+
+      // 监听滚动到数据区时触发动画
+      const dataSection = document.querySelector('.data-section');
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              animateAll();
+              observer.disconnect();
+            }
+          });
+        }, { threshold: 0.3 });
+        observer.observe(dataSection);
+      } else {
+        animateAll();
+      }
+    })();
+
+    // 表单提交
+    (function() {
+      const form = document.getElementById('contactForm');
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const btn = form.querySelector('button[type="submit"]');
+        const originalText = btn.textContent;
+        btn.textContent = '提交成功，感谢您的留言！';
+        btn.style.background = '#2E7D32';
+        setTimeout(() => {
+          btn.textContent = originalText;
+          btn.style.background = '';
+          form.reset();
+        }, 3000);
+      });
+    })();
+  </script>
+</body>
+</html>
